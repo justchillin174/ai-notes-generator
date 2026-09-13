@@ -7,9 +7,16 @@
 
     <title>NoteAI - AI Notes Generator</title>
 
+    <!-- Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
 
-    <!-- Mermaid for diagrams -->
+    <!-- Mermaid -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 
     <script>
@@ -18,7 +25,7 @@
         });
     </script>
 
-    <!-- MathJax for formulas and mathematical symbols -->
+    <!-- MathJax -->
     <script>
         window.MathJax = {
             tex: {
@@ -46,13 +53,15 @@
     <header class="header">
 
         <div class="logo">
-            📚 NoteAI
+            <span class="logo-icon">📚</span>
+            <span>NoteAI</span>
         </div>
 
         <button
             id="themeButton"
             class="theme-button"
-            onclick="toggleTheme()">
+            onclick="toggleTheme()"
+            aria-label="Toggle theme">
             🌙
         </button>
 
@@ -65,21 +74,25 @@
         <!-- HERO -->
         <section class="hero">
 
+            <div class="hero-badge">
+                ✨ AI-Powered Study Assistant
+            </div>
+
             <h1>
                 Turn any topic into
                 <span>smart notes.</span>
             </h1>
 
             <p>
-                Enter a topic or upload your study material
-                and let AI create clear, exam-ready notes.
+                Enter a topic or upload your study material.
+                NoteAI creates clear, organized and exam-ready notes.
             </p>
 
         </section>
 
 
         <!-- INPUT CARD -->
-        <section class="card">
+        <section class="card generator-card">
 
             <!-- TOPIC -->
             <div class="input-group">
@@ -91,8 +104,7 @@
                 <textarea
                     id="topic"
                     rows="3"
-                    placeholder="Enter your topic...">
-                </textarea>
+                    placeholder="Example: Photosynthesis, Newton's Laws, French Revolution..."></textarea>
 
             </div>
 
@@ -101,8 +113,8 @@
             <div class="input-group">
 
                 <label>
-                    Insert your content
-                    <span>(optional)</span>
+                    Study material
+                    <span class="optional">(optional)</span>
                 </label>
 
                 <div class="pdf-upload">
@@ -111,8 +123,7 @@
                         type="file"
                         id="pdfFile"
                         accept=".pdf,application/pdf"
-                        hidden
-                    >
+                        hidden>
 
                     <button
                         type="button"
@@ -123,15 +134,14 @@
 
                     </button>
 
-                    <div id="fileName">
+                    <div id="fileName" class="file-name">
                         No PDF selected
                     </div>
 
                 </div>
 
                 <small>
-                    Upload a book or chapter PDF and AI
-                    will use it as the main reference.
+                    Upload a book or chapter PDF to use it as the main reference.
                 </small>
 
             </div>
@@ -144,7 +154,7 @@
                 <div class="option">
 
                     <label for="level">
-                        Student Level
+                        Student level
                     </label>
 
                     <select id="level">
@@ -178,7 +188,7 @@
                 <div class="option">
 
                     <label for="length">
-                        Note Length
+                        Note length
                     </label>
 
                     <select id="length">
@@ -225,7 +235,7 @@
                         id="flashcards">
 
                     <span>
-                        Generate Flashcards
+                        Generate flashcards
                     </span>
 
                 </label>
@@ -239,7 +249,8 @@
                 class="generate-button"
                 onclick="generateNotes()">
 
-                ✨ Generate Notes
+                <span>✨</span>
+                Generate Notes
 
             </button>
 
@@ -267,9 +278,13 @@
 
             <div class="result-header">
 
-                <h2>
-                    📝 Your AI Notes
-                </h2>
+                <div>
+                    <div class="result-label">GENERATED CONTENT</div>
+
+                    <h2>
+                        📝 Your AI Notes
+                    </h2>
+                </div>
 
                 <div class="result-actions">
 
@@ -303,7 +318,7 @@
     <footer>
 
         <p>
-            NoteAI • Powered by AI
+            NoteAI <span>•</span> Powered by AI
         </p>
 
     </footer>
