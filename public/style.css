@@ -1,7 +1,3 @@
-/* =========================================
-   NoteAI — Clean Study Interface
-   ========================================= */
-
 * {
     box-sizing: border-box;
     margin: 0;
@@ -9,940 +5,784 @@
 }
 
 :root {
-    --bg: #f6f8fc;
+    --bg: #f6f7fb;
     --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
 
-    --text: #172033;
-    --muted: #667085;
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
 
-    --primary: #4f46e5;
-    --primary-hover: #4338ca;
-    --primary-soft: #eef2ff;
+    --purple-light: #eef2ff;
+    --blue-light: #eff6ff;
+    --green-light: #ecfdf5;
+    --yellow-light: #fffbeb;
+    --pink-light: #fdf2f8;
 
-    --border: #e4e7ec;
-    --input-bg: #fafbfc;
-
-    --success: #15803d;
-
-    --shadow:
-        0 10px 35px rgba(16, 24, 40, 0.06);
+    --shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
 }
-
-
-/* =========================================
-   BODY
-   ========================================= */
 
 body {
-    min-height: 100vh;
-
-    font-family:
-        "Inter",
-        "Segoe UI",
-        Arial,
-        sans-serif;
-
+    font-family: "Inter", sans-serif;
     background: var(--bg);
     color: var(--text);
-
     line-height: 1.6;
-
-    transition:
-        background 0.25s ease,
-        color 0.25s ease;
+    min-height: 100vh;
 }
 
 
-/* =========================================
-   HEADER
-   ========================================= */
+/* HEADER */
 
 .header {
-    height: 68px;
-
-    padding: 0 6%;
+    height: 72px;
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom: 1px solid var(--border);
 
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    background: var(--card);
-
-    border-bottom:
-        1px solid var(--border);
+    padding: 0 6%;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
 }
-
 
 .logo {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 10px;
 
-    font-size: 21px;
+    font-size: 20px;
     font-weight: 800;
-
-    letter-spacing: -0.4px;
 }
-
 
 .logo-icon {
-    font-size: 22px;
+    font-size: 25px;
 }
 
-
-.theme-button {
-    width: 40px;
-    height: 40px;
-
+.nav {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    gap: 8px;
+}
 
-    border: 1px solid var(--border);
+.nav-button {
+    border: none;
+    background: transparent;
+
+    padding: 10px 16px;
     border-radius: 10px;
 
-    background: var(--bg);
-
-    font-size: 17px;
+    color: var(--muted);
+    font-family: inherit;
+    font-weight: 600;
 
     cursor: pointer;
+    transition: 0.2s;
+}
 
-    transition: 0.2s ease;
+.nav-button:hover {
+    background: var(--purple-light);
+    color: var(--primary);
+}
+
+.nav-button.active {
+    background: var(--purple-light);
+    color: var(--primary);
+}
+
+.theme-button {
+    border: 1px solid var(--border);
+    background: white;
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 50%;
+    cursor: pointer;
+
+    font-size: 18px;
 }
 
 
-.theme-button:hover {
-    transform: translateY(-1px);
-}
-
-
-/* =========================================
-   MAIN
-   ========================================= */
+/* MAIN */
 
 .container {
-    width: 92%;
-    max-width: 1000px;
-
-    margin: 0 auto;
+    width: min(1050px, 92%);
+    margin: auto;
+    padding: 55px 0 80px;
 }
 
 
-/* =========================================
-   HERO
-   ========================================= */
+/* HERO */
 
 .hero {
     text-align: center;
-
-    padding:
-        64px 10px
-        42px;
+    max-width: 750px;
+    margin: 0 auto 35px;
 }
-
 
 .hero-badge {
     display: inline-block;
 
-    padding: 6px 13px;
-
-    margin-bottom: 18px;
-
+    padding: 7px 14px;
     border-radius: 30px;
 
-    background: var(--primary-soft);
+    background: var(--purple-light);
     color: var(--primary);
 
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
 
-    letter-spacing: 0.2px;
+    margin-bottom: 15px;
 }
 
-
-.hero h1 {
-    max-width: 800px;
-
-    margin: 0 auto;
-
-    font-size:
-        clamp(38px, 6vw, 62px);
-
-    line-height: 1.08;
-
-    letter-spacing: -2.2px;
-
-    font-weight: 800;
+.hero h1,
+.page-heading h1 {
+    font-size: clamp(32px, 5vw, 50px);
+    line-height: 1.1;
+    margin-bottom: 15px;
+    letter-spacing: -1.5px;
 }
 
-
-.hero h1 span {
-    color: var(--primary);
-}
-
-
-.hero p {
-    max-width: 620px;
-
-    margin:
-        18px auto 0;
-
+.hero p,
+.page-heading p {
     color: var(--muted);
-
     font-size: 16px;
-
-    line-height: 1.7;
 }
 
 
-/* =========================================
-   CARDS
-   ========================================= */
+/* CARD */
 
 .card {
     background: var(--card);
+    border: 1px solid var(--border);
 
-    border:
-        1px solid var(--border);
-
-    border-radius: 18px;
-
-    padding: 30px;
-
+    border-radius: 20px;
     box-shadow: var(--shadow);
 }
 
+.generator-card {
+    padding: 30px;
+    max-width: 850px;
+    margin: auto;
+}
 
-/* =========================================
-   INPUT AREA
-   ========================================= */
+
+/* INPUTS */
 
 .input-group {
-    margin-bottom: 27px;
+    margin-bottom: 22px;
 }
 
-
-.input-group label,
-.option label {
+.input-group label {
     display: block;
 
-    margin-bottom: 8px;
-
-    color: var(--text);
-
     font-size: 14px;
-
     font-weight: 700;
 
-    line-height: 1.4;
+    margin-bottom: 8px;
 }
 
-
-.optional {
+.input-group label span {
     color: var(--muted);
-
     font-weight: 500;
-
-    font-size: 12px;
 }
 
-
-textarea {
-    display: block;
-
-    width: 100%;
-
-    min-height: 125px;
-
-    padding: 15px 16px;
-
-    resize: vertical;
-
-    border:
-        1px solid var(--border);
-
-    border-radius: 12px;
-
-    background: var(--input-bg);
-
-    color: var(--text);
-
-    font-family: inherit;
-
-    font-size: 15px;
-
-    line-height: 1.65;
-
-    outline: none;
-
-    transition: 0.2s ease;
-}
-
-
-textarea::placeholder {
-    color: #98a2b3;
-}
-
-
-textarea:focus {
-    background: var(--card);
-
-    border-color: var(--primary);
-
-    box-shadow:
-        0 0 0 3px
-        rgba(79, 70, 229, 0.10);
-}
-
-
-/* =========================================
-   PDF UPLOAD
-   ========================================= */
-
-.pdf-upload {
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    flex-wrap: wrap;
-}
-
-
-.upload-button {
-    padding:
-        10px 15px;
-
-    border:
-        1px solid var(--border);
-
-    border-radius: 10px;
-
-    background: var(--card);
-
-    color: var(--text);
-
-    font-family: inherit;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition: 0.2s ease;
-}
-
-
-.upload-button:hover {
-    border-color: var(--primary);
-
-    color: var(--primary);
-
-    background: var(--primary-soft);
-}
-
-
-.file-name {
-    color: var(--muted);
-
-    font-size: 13px;
-
-    overflow-wrap: anywhere;
-}
-
-
-.input-group small {
-    display: block;
-
-    margin-top: 8px;
-
-    color: var(--muted);
-
-    font-size: 12px;
-
-    line-height: 1.5;
-}
-
-
-/* =========================================
-   OPTIONS
-   ========================================= */
-
-.options {
-    display: grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap: 18px;
-
-    margin-top: 4px;
-
-    margin-bottom: 23px;
-}
-
-
+textarea,
 select {
     width: 100%;
 
-    padding:
-        12px 13px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
 
-    border:
-        1px solid var(--border);
-
-    border-radius: 10px;
-
-    background: var(--input-bg);
-
+    background: #fff;
     color: var(--text);
 
-    font-family: inherit;
+    padding: 13px 15px;
 
+    font-family: inherit;
     font-size: 14px;
 
     outline: none;
-
-    cursor: pointer;
-
-    transition: 0.2s ease;
+    transition: 0.2s;
 }
 
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
 
+textarea:focus,
 select:focus {
     border-color: var(--primary);
-
-    box-shadow:
-        0 0 0 3px
-        rgba(79, 70, 229, 0.10);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
 }
 
 
-/* =========================================
-   CHECKBOXES
-   ========================================= */
+/* PDF */
+
+.pdf-upload {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 13px;
+
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+
+    background: #f8fafc;
+}
+
+#pdfFile {
+    display: none;
+}
+
+.upload-button {
+    background: var(--purple-light);
+    color: var(--primary);
+
+    padding: 9px 14px;
+    border-radius: 9px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.file-name {
+    color: var(--muted);
+    font-size: 13px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* OPTIONS */
+
+.options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
 
 .check-options {
     display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
 
-    align-items: center;
-
-    gap: 24px;
-
-    margin-bottom: 24px;
-
-    padding-top: 2px;
+    margin: 5px 0 25px;
 }
-
 
 .check-option {
     display: flex;
-
     align-items: center;
-
     gap: 9px;
 
-    color: var(--text);
+    padding: 10px 14px;
 
-    font-size: 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
 
-    font-weight: 500;
+    background: #fafafa;
+
+    font-size: 13px;
+    font-weight: 600;
 
     cursor: pointer;
 }
-
 
 .check-option input {
-    width: 17px;
-    height: 17px;
-
     accent-color: var(--primary);
-
-    cursor: pointer;
 }
 
 
-/* =========================================
-   GENERATE BUTTON
-   ========================================= */
+/* GENERATE */
 
 .generate-button {
     width: 100%;
 
-    padding:
-        14px 20px;
-
     border: none;
+    border-radius: 12px;
 
-    border-radius: 11px;
+    padding: 14px 20px;
 
-    background: var(--primary);
+    background: linear-gradient(
+        135deg,
+        var(--primary),
+        var(--primary-dark)
+    );
 
     color: white;
 
     font-family: inherit;
-
     font-size: 15px;
-
     font-weight: 700;
 
     cursor: pointer;
 
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+    transition: 0.2s;
 }
-
 
 .generate-button:hover {
-    background: var(--primary-hover);
-
     transform: translateY(-1px);
-
-    box-shadow:
-        0 8px 20px
-        rgba(79, 70, 229, 0.22);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
 }
 
 
-.generate-button:active {
-    transform: translateY(0);
-}
-
-
-/* =========================================
-   LOADING
-   ========================================= */
+/* LOADING */
 
 .loading {
     display: none;
 
     align-items: center;
-
     justify-content: center;
 
     gap: 10px;
 
-    padding-top: 18px;
+    margin-top: 20px;
 
     color: var(--primary);
-
-    font-size: 13px;
-
+    font-size: 14px;
     font-weight: 600;
 }
 
+.loading-spinner {
+    width: 18px;
+    height: 18px;
 
-.spinner {
-    width: 19px;
-    height: 19px;
-
-    border:
-        3px solid #e5e7eb;
-
-    border-top-color:
-        var(--primary);
+    border: 3px solid #e0e7ff;
+    border-top-color: var(--primary);
 
     border-radius: 50%;
 
-    animation:
-        spin 0.8s linear infinite;
+    animation: spin 0.8s linear infinite;
 }
 
-
 @keyframes spin {
-
     to {
         transform: rotate(360deg);
     }
-
 }
 
 
-/* =========================================
-   RESULT CARD
-   ========================================= */
+/* RESULT */
 
 .result-card {
     display: none;
 
-    margin-top: 28px;
-}
+    background: white;
 
+    margin: 35px auto 0;
+
+    border: 1px solid var(--border);
+    border-radius: 20px;
+
+    box-shadow: var(--shadow);
+
+    overflow: hidden;
+}
 
 .result-header {
     display: flex;
-
-    align-items: center;
-
     justify-content: space-between;
+    align-items: center;
 
     gap: 20px;
 
-    padding-bottom: 20px;
+    padding: 22px 25px;
 
-    margin-bottom: 26px;
-
-    border-bottom:
-        1px solid var(--border);
+    border-bottom: 1px solid var(--border);
 }
-
 
 .result-label {
-    margin-bottom: 5px;
+    font-size: 11px;
+    letter-spacing: 1px;
 
     color: var(--primary);
-
-    font-size: 10px;
-
     font-weight: 800;
-
-    letter-spacing: 1.2px;
 }
-
 
 .result-header h2 {
-    color: var(--text);
-
+    margin-top: 4px;
     font-size: 23px;
-
-    line-height: 1.3;
-
-    letter-spacing: -0.4px;
 }
-
 
 .result-actions {
     display: flex;
-
     gap: 8px;
+    flex-wrap: wrap;
 }
 
+.action-button {
+    border: 1px solid var(--border);
+    background: white;
 
-.result-actions button {
-    padding:
-        9px 12px;
-
-    border:
-        1px solid var(--border);
+    padding: 9px 12px;
 
     border-radius: 9px;
 
-    background: var(--bg);
-
-    color: var(--text);
-
     font-family: inherit;
-
-    font-size: 13px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition: 0.2s ease;
-}
-
-
-.result-actions button:hover {
-    border-color: var(--primary);
-
-    color: var(--primary);
-
-    background: var(--primary-soft);
-}
-
-
-/* =========================================
-   GENERATED NOTES
-   ========================================= */
-
-.notes {
-    color: var(--text);
-
-    font-size: 16px;
-
-    line-height: 1.85;
-
-    overflow-wrap: anywhere;
-}
-
-
-/* Main heading */
-.notes h1 {
-    margin:
-        0 0 22px;
-
-    color: var(--text);
-
-    font-size: 31px;
-
-    line-height: 1.25;
-
-    letter-spacing: -0.7px;
-}
-
-
-/* Section heading */
-.notes h2 {
-    margin:
-        32px 0 13px;
-
-    color: var(--primary);
-
-    font-size: 22px;
-
-    line-height: 1.35;
-
-    letter-spacing: -0.3px;
-}
-
-
-/* Smaller heading */
-.notes h3 {
-    margin:
-        24px 0 10px;
-
-    color: var(--text);
-
-    font-size: 18px;
-
-    line-height: 1.4;
-}
-
-
-/* Paragraphs */
-.notes p {
-    margin:
-        0 0 17px;
-
-    color: var(--text);
-
-    line-height: 1.85;
-}
-
-
-/* Lists */
-.notes ul,
-.notes ol {
-    margin:
-        10px 0 22px;
-
-    padding-left: 27px;
-}
-
-
-.notes li {
-    margin-bottom: 9px;
-
-    padding-left: 4px;
-
-    line-height: 1.75;
-}
-
-
-/* Bold keywords */
-.notes strong {
+    font-size: 12px;
     font-weight: 700;
 
-    color: var(--text);
+    cursor: pointer;
+}
+
+.action-button:hover {
+    background: #f8fafc;
+}
+
+.primary-action {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
 }
 
 
-/* Code / formulas */
-.notes code {
-    font-family:
-        "Consolas",
-        monospace;
+/* BEAUTIFUL NOTES */
 
-    background: var(--primary-soft);
+.notes {
+    padding: 35px;
+    font-size: 15px;
+}
 
-    padding:
-        2px 5px;
+.notes h1,
+.notes h2,
+.notes h3 {
+    color: #312e81;
+    margin-top: 28px;
+    margin-bottom: 12px;
+}
 
-    border-radius: 5px;
+.notes h1 {
+    font-size: 30px;
+}
+
+.notes h2 {
+    font-size: 24px;
+
+    background: var(--purple-light);
+
+    border-left: 5px solid var(--primary);
+
+    padding: 12px 15px;
+
+    border-radius: 8px;
+}
+
+.notes h3 {
+    font-size: 19px;
+}
+
+.notes p {
+    margin: 10px 0;
+}
+
+.notes ul,
+.notes ol {
+    padding-left: 25px;
+    margin: 12px 0;
+}
+
+.notes li {
+    margin: 7px 0;
+}
+
+.notes strong {
+    color: #4338ca;
 }
 
 
-/* Mermaid diagrams */
-.notes .mermaid {
-    margin:
-        25px 0;
+/* NOTE CALLOUTS */
 
-    padding: 15px;
-
-    overflow-x: auto;
-
-    border:
-        1px solid var(--border);
+.note-box {
+    padding: 16px 18px;
 
     border-radius: 12px;
 
-    background: var(--input-bg);
+    margin: 18px 0;
+
+    border-left: 5px solid var(--primary);
+    background: var(--blue-light);
+}
+
+.definition-box {
+    background: var(--green-light);
+    border-left-color: #10b981;
+}
+
+.important-box {
+    background: var(--yellow-light);
+    border-left-color: #f59e0b;
+}
+
+.example-box {
+    background: var(--pink-light);
+    border-left-color: #ec4899;
 }
 
 
-/* =========================================
-   FOOTER
-   ========================================= */
+/* CODE / MATH */
 
-footer {
+.notes pre {
+    background: #111827;
+    color: #f8fafc;
+
+    padding: 18px;
+    border-radius: 12px;
+
+    overflow-x: auto;
+
+    margin: 18px 0;
+}
+
+.notes code {
+    font-family: monospace;
+}
+
+.notes table {
+    width: 100%;
+    border-collapse: collapse;
+
+    margin: 20px 0;
+}
+
+.notes th,
+.notes td {
+    border: 1px solid var(--border);
+    padding: 10px;
+    text-align: left;
+}
+
+.notes th {
+    background: var(--purple-light);
+    color: #312e81;
+}
+
+
+/* YOUR NOTES */
+
+.your-notes-page {
+    display: none;
+}
+
+.page-heading {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.saved-notes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.saved-note-card {
+    background: white;
+
+    border: 1px solid var(--border);
+    border-radius: 16px;
+
+    padding: 22px;
+
+    box-shadow: 0 5px 20px rgba(15, 23, 42, 0.05);
+}
+
+.saved-note-card h3 {
+    margin-bottom: 8px;
+}
+
+.saved-note-date {
+    color: var(--muted);
+    font-size: 12px;
+
+    margin-bottom: 15px;
+}
+
+.saved-note-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.saved-note-actions button {
+    border: 1px solid var(--border);
+    background: white;
+
+    padding: 8px 11px;
+
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.saved-note-actions .open-note {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.delete-note:hover {
+    color: #dc2626;
+}
+
+.empty-notes {
+    grid-column: 1 / -1;
+
     text-align: center;
 
-    padding:
-        38px 20px;
+    background: white;
 
+    border: 1px solid var(--border);
+    border-radius: 18px;
+
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    font-size: 50px;
+    margin-bottom: 15px;
+}
+
+.empty-notes p {
     color: var(--muted);
-
-    font-size: 12px;
+    margin: 8px 0 25px;
 }
 
 
-footer span {
-    padding: 0 4px;
-}
-
-
-/* =========================================
-   DARK MODE
-   ========================================= */
+/* DARK MODE */
 
 body.dark {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --border: #334155;
 
-    --bg: #0b1020;
-
-    --card: #141a2e;
-
-    --text: #edf2ff;
-
-    --muted: #9ca8c0;
-
-    --primary: #818cf8;
-
-    --primary-hover: #6366f1;
-
-    --primary-soft: #20264a;
-
-    --border: #29324b;
-
-    --input-bg: #10162a;
-
-    --shadow:
-        0 10px 35px
-        rgba(0, 0, 0, 0.22);
+    --purple-light: #312e81;
+    --blue-light: #172554;
+    --green-light: #052e16;
+    --yellow-light: #422006;
+    --pink-light: #500724;
 }
 
+body.dark .header,
+body.dark .result-card,
+body.dark .saved-note-card,
+body.dark .empty-notes {
+    background: #1e293b;
+}
 
 body.dark textarea,
-body.dark select {
-    color: var(--text);
+body.dark select,
+body.dark .action-button,
+body.dark .saved-note-actions button {
+    background: #0f172a;
+    color: white;
+}
+
+body.dark .pdf-upload,
+body.dark .check-option {
+    background: #172033;
+}
+
+body.dark .theme-button {
+    background: #1e293b;
 }
 
 
-body.dark .upload-button {
-    background: var(--card);
-}
-
-
-/* =========================================
-   MOBILE
-   ========================================= */
+/* MOBILE */
 
 @media (max-width: 700px) {
 
     .header {
-        padding: 0 5%;
+        padding: 0 4%;
+        height: auto;
+        min-height: 70px;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
 
+    .logo {
+        font-size: 17px;
+    }
+
+    .nav {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .nav-button {
+        font-size: 12px;
+        padding: 8px 11px;
+    }
 
     .container {
         width: 94%;
+        padding-top: 35px;
     }
 
-
-    .hero {
-        padding:
-            42px 5px
-            30px;
+    .hero h1,
+    .page-heading h1 {
+        font-size: 32px;
     }
 
-
-    .hero h1 {
-        font-size: 38px;
-
-        letter-spacing: -1.5px;
+    .generator-card {
+        padding: 20px;
     }
-
-
-    .hero p {
-        font-size: 14px;
-
-        line-height: 1.65;
-    }
-
-
-    .card {
-        padding: 21px;
-
-        border-radius: 15px;
-    }
-
 
     .options {
         grid-template-columns: 1fr;
-
-        gap: 15px;
+        gap: 0;
     }
 
-
-    .check-options {
-        flex-direction: column;
-
+    .pdf-upload {
         align-items: flex-start;
-
-        gap: 13px;
+        flex-direction: column;
     }
-
 
     .result-header {
-        flex-direction: column;
-
         align-items: flex-start;
+        flex-direction: column;
     }
-
 
     .result-actions {
         width: 100%;
     }
 
-
-    .result-actions button {
+    .action-button {
         flex: 1;
     }
 
-
     .notes {
-        font-size: 15px;
-
-        line-height: 1.8;
+        padding: 22px;
     }
-
-
-    .notes h1 {
-        font-size: 27px;
-    }
-
 
     .notes h2 {
         font-size: 20px;
     }
 
-
-    .notes h3 {
-        font-size: 17px;
+    .saved-notes {
+        grid-template-columns: 1fr;
     }
-
+.patience-message {
+    text-align: center;
+    margin-top: 14px;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.5;
+    font-style: italic;
+}
 }

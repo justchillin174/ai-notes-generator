@@ -1,301 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>NoteAI - AI Notes Generator</title>
+    <title>AI Notes Generator</title>
 
-    <!-- Inter font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
 
     <!-- Mermaid -->
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-
-    <script>
-        mermaid.initialize({
-            startOnLoad: false
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 
     <!-- MathJax -->
     <script>
         window.MathJax = {
             tex: {
-                inlineMath: [
-                    ['$', '$'],
-                    ['\\(', '\\)']
-                ],
-                displayMath: [
-                    ['$$', '$$'],
-                    ['\\[', '\\]']
-                ]
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
             }
         };
     </script>
 
-    <script
-        async
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 
 <body>
 
-    <!-- HEADER -->
-    <header class="header">
+<header class="header">
+    <div class="logo">
+        <span class="logo-icon">📚</span>
+        <span>StudyNotes</span>
+    </div>
 
-        <div class="logo">
-            <span class="logo-icon">📚</span>
-            <span>NoteAI</span>
-        </div>
-
-        <button
-            id="themeButton"
-            class="theme-button"
-            onclick="toggleTheme()"
-            aria-label="Toggle theme">
-            🌙
+    <nav class="nav">
+        <button id="generateTab" class="nav-button active">
+            ✨ Generate Notes
         </button>
 
-    </header>
+        <button id="yourNotesTab" class="nav-button">
+            📚 Your Notes
+        </button>
+    </nav>
+
+    <button id="themeButton" class="theme-button">
+        🌙
+    </button>
+</header>
 
 
-    <!-- MAIN -->
-    <main class="container">
+<main class="container">
 
-        <!-- HERO -->
-        <section class="hero">
+    <!-- GENERATOR PAGE -->
+    <section id="generatorPage">
 
+        <div class="hero">
             <div class="hero-badge">
-                ✨ AI-Powered Study Assistant
+                ✨ Smart Study Assistant
             </div>
 
-            <h1>
-                Turn any topic into
-                <span>smart notes.</span>
-            </h1>
+            <h1>Create beautiful study notes</h1>
 
             <p>
-                Enter a topic or upload your study material.
-                NoteAI creates clear, organized and exam-ready notes.
+                Enter any topic or upload a PDF and create clear,
+                organised notes for studying.
             </p>
+        </div>
 
-        </section>
 
+        <div class="card generator-card">
 
-        <!-- INPUT CARD -->
-        <section class="card generator-card">
-
-            <!-- TOPIC -->
             <div class="input-group">
-
-                <label for="topic">
-                    What do you want to study?
-                </label>
+                <label for="topic">What do you want to study?</label>
 
                 <textarea
                     id="topic"
-                    rows="3"
-                    placeholder="Example: Photosynthesis, Newton's Laws, French Revolution..."></textarea>
-
+                    placeholder="Example: Photosynthesis, French Revolution, Quadratic Equations..."
+                    rows="4"
+                ></textarea>
             </div>
 
 
-            <!-- PDF UPLOAD -->
             <div class="input-group">
-
-                <label>
-                    Study material
-                    <span class="optional">(optional)</span>
-                </label>
+                <label>Reference PDF <span>(optional)</span></label>
 
                 <div class="pdf-upload">
-
                     <input
                         type="file"
                         id="pdfFile"
-                        accept=".pdf,application/pdf"
-                        hidden>
+                        accept=".pdf"
+                    >
 
-                    <button
-                        type="button"
-                        class="upload-button"
-                        onclick="document.getElementById('pdfFile').click()">
-
+                    <label for="pdfFile" class="upload-button">
                         📄 Choose PDF
+                    </label>
 
-                    </button>
-
-                    <div id="fileName" class="file-name">
-                        No PDF selected
-                    </div>
-
+                    <span id="fileName" class="file-name">
+                        No file selected
+                    </span>
                 </div>
-
-                <small>
-                    Upload a book or chapter PDF to use it as the main reference.
-                </small>
-
             </div>
 
 
-            <!-- OPTIONS -->
             <div class="options">
 
-                <!-- LEVEL -->
-                <div class="option">
-
-                    <label for="level">
-                        Student level
-                    </label>
+                <div class="input-group">
+                    <label for="level">Student level</label>
 
                     <select id="level">
-
-                        <option value="Beginner">
-                            Beginner
-                        </option>
-
-                        <option value="Middle School">
-                            Middle School
-                        </option>
-
-                        <option value="High School" selected>
-                            High School
-                        </option>
-
-                        <option value="College">
-                            College
-                        </option>
-
-                        <option value="Advanced">
-                            Advanced
-                        </option>
-
+                        <option value="school">School</option>
+                        <option value="middle school">Middle School</option>
+                        <option value="high school">High School</option>
+                        <option value="college">College</option>
                     </select>
-
                 </div>
 
 
-                <!-- LENGTH -->
-                <div class="option">
-
-                    <label for="length">
-                        Note length
-                    </label>
+                <div class="input-group">
+                    <label for="length">Note length</label>
 
                     <select id="length">
-
-                        <option value="Short">
-                            Short
-                        </option>
-
-                        <option value="Medium" selected>
-                            Medium
-                        </option>
-
-                        <option value="Detailed">
-                            Detailed
-                        </option>
-
+                        <option value="short">Short</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="detailed">Detailed</option>
                     </select>
-
                 </div>
 
             </div>
 
 
-            <!-- EXTRA OPTIONS -->
             <div class="check-options">
 
                 <label class="check-option">
-
-                    <input
-                        type="checkbox"
-                        id="mcq">
-
-                    <span>
-                        Generate MCQs
-                    </span>
-
+                    <input type="checkbox" id="mcq">
+                    <span>📝 Include MCQs</span>
                 </label>
-
 
                 <label class="check-option">
-
-                    <input
-                        type="checkbox"
-                        id="flashcards">
-
-                    <span>
-                        Generate flashcards
-                    </span>
-
+                    <input type="checkbox" id="flashcards">
+                    <span>🗂️ Include Flashcards</span>
                 </label>
 
             </div>
 
 
-            <!-- GENERATE BUTTON -->
-            <button
-                id="generateButton"
-                class="generate-button"
-                onclick="generateNotes()">
+           <button id="generateButton" class="generate-button">
+    ✨ Generate Notes
+</button>
 
-                <span>✨</span>
-                Generate Notes
+<p class="patience-message">
+    *Notes may take some time to generate. Please keep some patience.
+    This problem will soon be solved. Thank you.
+</p>
 
-            </button>
-
-
-            <!-- LOADING -->
-            <div
-                id="loading"
-                class="loading">
-
-                <div class="spinner"></div>
-
-                <span>
-                    AI is creating your notes...
-                </span>
-
-            </div>
-
-        </section>
-
+<div id="loading" class="loading">
+    <div class="loading-spinner"></div>
+    <span>Creating notes...</span>
+</div>
 
         <!-- RESULT -->
-        <section
-            id="resultCard"
-            class="card result-card">
+        <section id="resultCard" class="result-card">
 
             <div class="result-header">
 
                 <div>
-                    <div class="result-label">GENERATED CONTENT</div>
+                    <span class="result-label">
+                        GENERATED CONTENT
+                    </span>
 
-                    <h2>
-                        📝 Your AI Notes
-                    </h2>
+                    <h2>Your Notes</h2>
                 </div>
 
                 <div class="result-actions">
 
-                    <button
-                        onclick="copyNotes()">
+                    <button id="saveButton" class="action-button">
+                        💾 Save
+                    </button>
+
+                    <button id="copyButton" class="action-button">
                         📋 Copy
                     </button>
 
-                    <button
-                        onclick="downloadNotes()">
-                        ⬇️ Download
+                    <button id="downloadButton" class="action-button primary-action">
+                        📥 Download PDF
                     </button>
 
                 </div>
@@ -303,56 +196,59 @@
             </div>
 
 
-            <!-- NOTES -->
-            <div
-                id="notes"
-                class="notes">
-            </div>
+            <div id="notes" class="notes"></div>
 
         </section>
 
-    </main>
+    </section>
 
 
-    <!-- FOOTER -->
-    <footer>
 
-        <p>
-            NoteAI <span>•</span> Powered by AI
-        </p>
+    <!-- YOUR NOTES PAGE -->
+    <section id="yourNotesPage" class="your-notes-page">
 
-    </footer>
+        <div class="page-heading">
+
+            <div>
+                <div class="hero-badge">
+                    📚 Your Library
+                </div>
+
+                <h1>Your Notes</h1>
+
+                <p>
+                    Your saved notes are stored on this device and can
+                    be opened even when you're offline.
+                </p>
+            </div>
+
+        </div>
 
 
-    <script src="app.js"></script>
+        <div id="savedNotes" class="saved-notes">
+
+            <div class="empty-notes">
+                <div class="empty-icon">📚</div>
+
+                <h2>No saved notes yet</h2>
+
+                <p>
+                    Generate and save your first set of notes.
+                </p>
+
+                <button id="startCreatingButton" class="generate-button">
+                    ✨ Create Notes
+                </button>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
 
 
-    <!-- PDF filename -->
-    <script>
-
-        document
-            .getElementById("pdfFile")
-            .addEventListener("change", function () {
-
-                const fileName =
-                    document.getElementById("fileName");
-
-                if (this.files.length > 0) {
-
-                    fileName.textContent =
-                        "📄 " + this.files[0].name;
-
-                } else {
-
-                    fileName.textContent =
-                        "No PDF selected";
-
-                }
-
-            });
-
-    </script>
+<script src="app.js"></script>
 
 </body>
-
 </html>
