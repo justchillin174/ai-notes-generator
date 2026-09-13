@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NoteAI - AI Notes Generator</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Mermaid for diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: false
+        });
+    </script>
+
+    <!-- MathJax for formulas and mathematical symbols -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [
+                    ['$', '$'],
+                    ['\\(', '\\)']
+                ],
+                displayMath: [
+                    ['$$', '$$'],
+                    ['\\[', '\\]']
+                ]
+            }
+        };
+    </script>
+
+    <script
+        async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+
+        <div class="logo">
+            📚 NoteAI
+        </div>
+
+        <button
+            id="themeButton"
+            class="theme-button"
+            onclick="toggleTheme()">
+            🌙
+        </button>
+
+    </header>
+
+
+    <!-- MAIN -->
+    <main class="container">
+
+        <!-- HERO -->
+        <section class="hero">
+
+            <h1>
+                Turn any topic into
+                <span>smart notes.</span>
+            </h1>
+
+            <p>
+                Enter a topic or upload your study material
+                and let AI create clear, exam-ready notes.
+            </p>
+
+        </section>
+
+
+        <!-- INPUT CARD -->
+        <section class="card">
+
+            <!-- TOPIC -->
+            <div class="input-group">
+
+                <label for="topic">
+                    What do you want to study?
+                </label>
+
+                <textarea
+                    id="topic"
+                    rows="3"
+                    placeholder="Enter your topic...">
+                </textarea>
+
+            </div>
+
+
+            <!-- PDF UPLOAD -->
+            <div class="input-group">
+
+                <label>
+                    Insert your content
+                    <span>(optional)</span>
+                </label>
+
+                <div class="pdf-upload">
+
+                    <input
+                        type="file"
+                        id="pdfFile"
+                        accept=".pdf,application/pdf"
+                        hidden
+                    >
+
+                    <button
+                        type="button"
+                        class="upload-button"
+                        onclick="document.getElementById('pdfFile').click()">
+
+                        📄 Choose PDF
+
+                    </button>
+
+                    <div id="fileName">
+                        No PDF selected
+                    </div>
+
+                </div>
+
+                <small>
+                    Upload a book or chapter PDF and AI
+                    will use it as the main reference.
+                </small>
+
+            </div>
+
+
+            <!-- OPTIONS -->
+            <div class="options">
+
+                <!-- LEVEL -->
+                <div class="option">
+
+                    <label for="level">
+                        Student Level
+                    </label>
+
+                    <select id="level">
+
+                        <option value="Beginner">
+                            Beginner
+                        </option>
+
+                        <option value="Middle School">
+                            Middle School
+                        </option>
+
+                        <option value="High School" selected>
+                            High School
+                        </option>
+
+                        <option value="College">
+                            College
+                        </option>
+
+                        <option value="Advanced">
+                            Advanced
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- LENGTH -->
+                <div class="option">
+
+                    <label for="length">
+                        Note Length
+                    </label>
+
+                    <select id="length">
+
+                        <option value="Short">
+                            Short
+                        </option>
+
+                        <option value="Medium" selected>
+                            Medium
+                        </option>
+
+                        <option value="Detailed">
+                            Detailed
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- EXTRA OPTIONS -->
+            <div class="check-options">
+
+                <label class="check-option">
+
+                    <input
+                        type="checkbox"
+                        id="mcq">
+
+                    <span>
+                        Generate MCQs
+                    </span>
+
+                </label>
+
+
+                <label class="check-option">
+
+                    <input
+                        type="checkbox"
+                        id="flashcards">
+
+                    <span>
+                        Generate Flashcards
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            <!-- GENERATE BUTTON -->
+            <button
+                id="generateButton"
+                class="generate-button"
+                onclick="generateNotes()">
+
+                ✨ Generate Notes
+
+            </button>
+
+
+            <!-- LOADING -->
+            <div
+                id="loading"
+                class="loading">
+
+                <div class="spinner"></div>
+
+                <span>
+                    AI is creating your notes...
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- RESULT -->
+        <section
+            id="resultCard"
+            class="card result-card">
+
+            <div class="result-header">
+
+                <h2>
+                    📝 Your AI Notes
+                </h2>
+
+                <div class="result-actions">
+
+                    <button
+                        onclick="copyNotes()">
+                        📋 Copy
+                    </button>
+
+                    <button
+                        onclick="downloadNotes()">
+                        ⬇️ Download
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- NOTES -->
+            <div
+                id="notes"
+                class="notes">
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+        <p>
+            NoteAI • Powered by AI
+        </p>
+
+    </footer>
+
+
+    <script src="app.js"></script>
+
+
+    <!-- PDF filename -->
+    <script>
+
+        document
+            .getElementById("pdfFile")
+            .addEventListener("change", function () {
+
+                const fileName =
+                    document.getElementById("fileName");
+
+                if (this.files.length > 0) {
+
+                    fileName.textContent =
+                        "📄 " + this.files[0].name;
+
+                } else {
+
+                    fileName.textContent =
+                        "No PDF selected";
+
+                }
+
+            });
+
+    </script>
+
+</body>
+
+</html>
