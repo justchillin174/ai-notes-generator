@@ -1595,5 +1595,218 @@ Make the structure easy to understand and remember.
 
         }
     );
+/* =========================================
+   NOVIQRA APPEARANCE SETTINGS
+   ========================================= */
 
+(function loadNoviqraSettings() {
+
+    const SETTINGS_KEY = "noviqraSettings";
+
+
+    const colorThemes = {
+
+        teal: {
+            primary: "#0f766e",
+            primaryLight: "#14b8a6",
+            primaryDark: "#115e59",
+            primarySoft: "#ccfbf1"
+        },
+
+        blue: {
+            primary: "#1d4ed8",
+            primaryLight: "#3b82f6",
+            primaryDark: "#1e3a8a",
+            primarySoft: "#dbeafe"
+        },
+
+        green: {
+            primary: "#15803d",
+            primaryLight: "#22c55e",
+            primaryDark: "#166534",
+            primarySoft: "#dcfce7"
+        },
+
+        purple: {
+            primary: "#6d28d9",
+            primaryLight: "#8b5cf6",
+            primaryDark: "#4c1d95",
+            primarySoft: "#ede9fe"
+        },
+
+        orange: {
+            primary: "#ea580c",
+            primaryLight: "#f97316",
+            primaryDark: "#9a3412",
+            primarySoft: "#ffedd5"
+        },
+
+        pink: {
+            primary: "#db2777",
+            primaryLight: "#ec4899",
+            primaryDark: "#9d174d",
+            primarySoft: "#fce7f3"
+        },
+
+        indigo: {
+            primary: "#3730a3",
+            primaryLight: "#6366f1",
+            primaryDark: "#312e81",
+            primarySoft: "#e0e7ff"
+        },
+
+        cyan: {
+            primary: "#0891b2",
+            primaryLight: "#06b6d4",
+            primaryDark: "#155e75",
+            primarySoft: "#cffafe"
+        },
+
+        red: {
+            primary: "#b91c1c",
+            primaryLight: "#ef4444",
+            primaryDark: "#7f1d1d",
+            primarySoft: "#fee2e2"
+        },
+
+        gold: {
+            primary: "#b45309",
+            primaryLight: "#d97706",
+            primaryDark: "#78350f",
+            primarySoft: "#fef3c7"
+        }
+
+    };
+
+
+    const backgrounds = {
+
+        white:
+            "#f7faf9",
+
+        "soft-teal":
+            "#ecfdf9",
+
+        gradient:
+            "linear-gradient(135deg, #ecfeff 0%, #ccfbf1 50%, #f0fdfa 100%)",
+
+        mesh:
+            "radial-gradient(circle at 20% 20%, #99f6e4, transparent 35%), radial-gradient(circle at 80% 80%, #a7f3d0, transparent 35%), #f0fdfa",
+
+        dark:
+            "linear-gradient(135deg, #0f172a 0%, #134e4a 100%)"
+
+    };
+
+
+    const saved =
+        localStorage.getItem(
+            SETTINGS_KEY
+        );
+
+
+    if (!saved) return;
+
+
+    try {
+
+        const settings =
+            JSON.parse(saved);
+
+
+        /* COLOR */
+
+        const theme =
+            colorThemes[settings.color];
+
+
+        if (theme) {
+
+            document.documentElement.style.setProperty(
+                "--primary",
+                theme.primary
+            );
+
+            document.documentElement.style.setProperty(
+                "--primary-light",
+                theme.primaryLight
+            );
+
+            document.documentElement.style.setProperty(
+                "--primary-dark",
+                theme.primaryDark
+            );
+
+            document.documentElement.style.setProperty(
+                "--primary-soft",
+                theme.primarySoft
+            );
+
+            document.documentElement.style.setProperty(
+                "--soft",
+                theme.primarySoft
+            );
+
+        }
+
+
+
+        /* CUSTOM BACKGROUND */
+
+        if (settings.customBackground) {
+
+            document.body.style.backgroundImage =
+                `url("${settings.customBackground}")`;
+
+            document.body.style.backgroundSize =
+                "cover";
+
+            document.body.style.backgroundAttachment =
+                "fixed";
+
+            document.body.style.backgroundPosition =
+                "center";
+
+            document.body.style.backgroundRepeat =
+                "no-repeat";
+
+            document.body.classList.add(
+                "has-custom-background"
+            );
+
+        }
+
+        /* DEFAULT BACKGROUND */
+
+        else {
+
+            const background =
+                backgrounds[
+                    settings.background
+                ];
+
+
+            if (background) {
+
+                document.body.style.background =
+                    background;
+
+            }
+
+            document.body.classList.remove(
+                "has-custom-background"
+            );
+
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Noviqra settings could not be loaded.",
+            error
+        );
+
+    }
+
+})();
 });

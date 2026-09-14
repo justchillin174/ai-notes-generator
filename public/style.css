@@ -1715,5 +1715,30 @@ body.dark-mode .reading-paper-header {
     .grade-tab {
         min-width: 75px;
     }
+/* =========================================
+   NOVIQRA USER APPEARANCE SETTINGS
+   ========================================= */
 
+body {
+    transition:
+        background 0.35s ease,
+        color 0.25s ease;
+}
+
+
+/* Keep website content readable over custom backgrounds */
+
+body.has-custom-background::before {
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(255, 255, 255, 0.82);
+
+    pointer-events: none;
+
+    z-index: -1;
+}
 }
