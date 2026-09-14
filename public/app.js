@@ -1,1463 +1,1295 @@
-/* =========================================================
+/* =====================================================
    AI NOTES GENERATOR
-   Frontend Controller
-   ========================================================= */
+   FRONTEND CONTROLLER
+===================================================== */
 
+document.addEventListener("DOMContentLoaded", () => {
 
-/* =========================
-   DOM ELEMENTS
-   ========================= */
+    /* =================================================
+       ELEMENTS
+    ================================================= */
 
-const generateTab = document.getElementById("generateTab");
-const learnTab = document.getElementById("learnTab");
-const booksTab = document.getElementById("booksTab");
-const yourNotesTab = document.getElementById("yourNotesTab");
+    const generateTab =
+        document.getElementById("generateTab");
 
-const generatePage = document.getElementById("generatePage");
-const learnPage = document.getElementById("learnPage");
-const booksPage = document.getElementById("booksPage");
-const yourNotesPage = document.getElementById("yourNotesPage");
+    const learnTab =
+        document.getElementById("learnTab");
 
-const readingPage = document.getElementById("readingPage");
+    const booksTab =
+        document.getElementById("booksTab");
 
-const themeButton = document.getElementById("themeButton");
+    const yourNotesTab =
+        document.getElementById("yourNotesTab");
 
+    const themeButton =
+        document.getElementById("themeButton");
 
-/* =========================
-   MERMAID
-   ========================= */
 
-if (window.mermaid) {
-    mermaid.initialize({
-        startOnLoad: false,
-        securityLevel: "loose"
-    });
-}
+    const generatePage =
+        document.getElementById("generatePage");
 
+    const learnPage =
+        document.getElementById("learnPage");
 
-/* =========================
-   PAGE SWITCHING
-   ========================= */
+    const booksPage =
+        document.getElementById("booksPage");
 
-function hideAllPages() {
+    const yourNotesPage =
+        document.getElementById("yourNotesPage");
 
-    generatePage.classList.remove("active-page");
-    learnPage.classList.remove("active-page");
-    booksPage.classList.remove("active-page");
-    yourNotesPage.classList.remove("active-page");
+    const readingPage =
+        document.getElementById("readingPage");
 
-    readingPage.classList.remove("active");
 
-    generateTab.classList.remove("active");
-    learnTab.classList.remove("active");
-    booksTab.classList.remove("active");
-    yourNotesTab.classList.remove("active");
-}
-
-
-function showPage(page) {
-
-    hideAllPages();
-
-    page.classList.add("active-page");
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-}
-
-
-generateTab.addEventListener("click", () => {
-    showPage(generatePage);
-    generateTab.classList.add("active");
-});
-
-
-learnTab.addEventListener("click", () => {
-    showPage(learnPage);
-    learnTab.classList.add("active");
-});
-
-
-booksTab.addEventListener("click", () => {
-    showPage(booksPage);
-    booksTab.classList.add("active");
-});
-
-
-yourNotesTab.addEventListener("click", () => {
-    showPage(yourNotesPage);
-    yourNotesTab.classList.add("active");
-
-    renderSavedNotes();
-});
-
-
-/* =========================
-   PDF FILE NAME
-   ========================= */
-
-const pdfFile = document.getElementById("pdfFile");
-const fileName = document.getElementById("fileName");
-
-pdfFile.addEventListener("change", () => {
-
-    if (pdfFile.files.length > 0) {
-        fileName.textContent = pdfFile.files[0].name;
-    } else {
-        fileName.textContent =
-            "Use a textbook, chapter or study material";
-    }
-
-});
-
-
-/* =========================
-   MARKDOWN → HTML
-   ========================= */
-
-function escapeHtml(text) {
-
-    return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-}
-
-
-function markdownToHtml(markdown) {
-
-    if (!markdown) return "";
-
-    let text = markdown.replace(/\r/g, "");
-
-    const mermaidBlocks = [];
-
-    text = text.replace(
-        /```mermaid\s*([\s\S]*?)```/gi,
-        function (_, diagram) {
-
-            const id =
-                "mermaid-" +
-                Date.now() +
-                "-" +
-                mermaidBlocks.length;
-
-            mermaidBlocks.push({
-                id: id,
-                code: diagram.trim()
-            });
-
-            return `<div class="mermaid-placeholder" id="${id}"></div>`;
-        }
-    );
-
-
-    const codeBlocks = [];
-
-    text = text.replace(
-        /```([\s\S]*?)```/g,
-        function (_, code) {
-
-            const id =
-                "code-" +
-                Date.now() +
-                "-" +
-                codeBlocks.length;
-
-            codeBlocks.push({
-                id: id,
-                code: code.trim()
-            });
-
-            return `<pre id="${id}"></pre>`;
-        }
-    );
-
-
-    text = escapeHtml(text);
-
-
-    text = text.replace(
-        /^### (.*)$/gm,
-        "<h3>$1</h3>"
-    );
-
-    text = text.replace(
-        /^## (.*)$/gm,
-        "<h2>$1</h2>"
-    );
-
-    text = text.replace(
-        /^# (.*)$/gm,
-        "<h1>$1</h1>"
-    );
-
-
-    text = text.replace(
-        /\*\*(.*?)\*\*/g,
-        "<strong>$1</strong>"
-    );
-
-    text = text.replace(
-        /\*(.*?)\*/g,
-        "<em>$1</em>"
-    );
-
-
-    text = text.replace(
-        /^\s*[-•] (.*)$/gm,
-        "<li>$1</li>"
-    );
-
-    text = text.replace(
-        /(<li>.*<\/li>\n?)+/g,
-        "<ul>$&</ul>"
-    );
-
-
-    text = text.replace(
-        /^\s*\d+\.\s+(.*)$/gm,
-        "<li>$1</li>"
-    );
-
-
-    text = text.replace(
-        /\n{2,}/g,
-        "</p><p>"
-    );
-
-
-    text = text.replace(
-        /\n/g,
-        "<br>"
-    );
-
-
-    text = "<p>" + text + "</p>";
-
-
-    mermaidBlocks.forEach(block => {
-
-        text = text.replace(
-            `&lt;div class="mermaid-placeholder" id="${block.id}"&gt;&lt;/div&gt;`,
-            `<div class="mermaid" data-mermaid-id="${block.id}">${escapeHtml(block.code)}</div>`
-        );
-
-    });
-
-
-    codeBlocks.forEach(block => {
-
-        text = text.replace(
-            `<pre id="${block.id}"></pre>`,
-            `<pre>${escapeHtml(block.code)}</pre>`
-        );
-
-    });
-
-
-    return text;
-}
-
-
-/* =========================
-   RENDER MERMAID
-   ========================= */
-
-async function renderMermaid(container) {
-
-    if (!window.mermaid) return;
-
-    const diagrams = container.querySelectorAll(".mermaid");
-
-    for (const diagram of diagrams) {
-
-        try {
-
-            const code = diagram.textContent;
-
-            const id =
-                "diagram-" +
-                Math.random().toString(36).substring(2);
-
-            const result =
-                await mermaid.render(id, code);
-
-            diagram.innerHTML = result.svg;
-
-        } catch (error) {
-
-            console.warn(
-                "Mermaid diagram could not be rendered:",
-                error
-            );
-
-            diagram.innerHTML =
-                "<p>Concept diagram could not be displayed.</p>";
-        }
-    }
-}
-
-
-/* =========================
-   MATHJAX
-   ========================= */
-
-async function renderMath(container) {
-
-    if (
-        window.MathJax &&
-        window.MathJax.typesetPromise
-    ) {
-
-        try {
-
-            await MathJax.typesetPromise([container]);
-
-        } catch (error) {
-
-            console.warn(
-                "Math rendering failed:",
-                error
-            );
-        }
-    }
-}
-
-
-/* =========================
-   FINAL CONTENT RENDER
-   ========================= */
-
-async function renderContent(container, text) {
-
-    container.innerHTML = markdownToHtml(text);
-
-    await renderMermaid(container);
-
-    await renderMath(container);
-}
-
-
-/* =========================================================
-   GENERATE NOTES
-   ========================================================= */
-
-const generateButton =
-    document.getElementById("generateButton");
-
-const loading =
-    document.getElementById("loading");
-
-const resultCard =
-    document.getElementById("resultCard");
-
-const notes =
-    document.getElementById("notes");
-
-const resultTitle =
-    document.getElementById("resultTitle");
-
-
-let currentNote = null;
-
-
-generateButton.addEventListener("click", async () => {
+    const generateButton =
+        document.getElementById("generateButton");
 
     const topic =
-        document.getElementById("topic").value.trim();
+        document.getElementById("topic");
 
     const level =
-        document.getElementById("level").value;
+        document.getElementById("level");
 
     const length =
-        document.getElementById("length").value;
+        document.getElementById("length");
 
     const mcq =
-        document.getElementById("mcq").checked;
+        document.getElementById("mcq");
 
     const flashcards =
-        document.getElementById("flashcards").checked;
+        document.getElementById("flashcards");
+
+    const pdfFile =
+        document.getElementById("pdfFile");
+
+    const fileName =
+        document.getElementById("fileName");
+
+    const loading =
+        document.getElementById("loading");
+
+    const resultCard =
+        document.getElementById("resultCard");
+
+    const notes =
+        document.getElementById("notes");
+
+    const resultTitle =
+        document.getElementById("resultTitle");
 
 
-    if (!topic && !pdfFile.files.length) {
+    /* LEARN */
 
-        alert(
-            "Please enter a topic or upload a PDF."
+    const learnGrade =
+        document.getElementById("learnGrade");
+
+    const learnTopic =
+        document.getElementById("learnTopic");
+
+    const teachMode =
+        document.getElementById("teachMode");
+
+    const revisionMode =
+        document.getElementById("revisionMode");
+
+    const conceptMode =
+        document.getElementById("conceptMode");
+
+    const generateLearnButton =
+        document.getElementById(
+            "generateLearnButton"
         );
 
-        return;
-    }
+    const learnLoading =
+        document.getElementById("learnLoading");
+
+    const learnResult =
+        document.getElementById("learnResult");
+
+    const learnContent =
+        document.getElementById("learnContent");
+
+    const learnResultTitle =
+        document.getElementById(
+            "learnResultTitle"
+        );
 
 
-    const formData = new FormData();
+    /* NOTES */
 
-    formData.append("topic", topic);
-    formData.append("level", level);
-    formData.append("length", length);
-    formData.append("mcq", mcq);
-    formData.append("flashcards", flashcards);
+    const savedNotes =
+        document.getElementById("savedNotes");
+
+    const emptyNotes =
+        document.getElementById("emptyNotes");
+
+    const notesSearch =
+        document.getElementById("notesSearch");
+
+    const notesSort =
+        document.getElementById("notesSort");
+
+    const startCreatingButton =
+        document.getElementById(
+            "startCreatingButton"
+        );
 
 
-    if (pdfFile.files.length) {
-        formData.append("pdf", pdfFile.files[0]);
-    }
+    /* READING */
+
+    const backToNotesButton =
+        document.getElementById(
+            "backToNotesButton"
+        );
+
+    const readingTitle =
+        document.getElementById(
+            "readingTitle"
+        );
+
+    const readingContent =
+        document.getElementById(
+            "readingContent"
+        );
 
 
-    generateButton.disabled = true;
+    /* =================================================
+       PAGE NAVIGATION
+    ================================================= */
 
-    loading.classList.add("active");
+    function showPage(page) {
 
-    resultCard.classList.remove("active");
-
-
-    try {
-
-        const response =
-            await fetch("/api/generate", {
-                method: "POST",
-                body: formData
+        document
+            .querySelectorAll(".page")
+            .forEach(item => {
+                item.classList.remove(
+                    "active-page"
+                );
             });
 
+        page.classList.add("active-page");
 
-        const data =
-            await response.json();
+        readingPage.classList.remove("active");
 
-
-        if (!response.ok) {
-
-            throw new Error(
-                data.error ||
-                data.message ||
-                "Failed to generate notes."
-            );
-        }
-
-
-        const generatedText =
-            data.notes ||
-            data.text ||
-            data.result;
-
-
-        if (!generatedText) {
-
-            throw new Error(
-                "The server returned no notes."
-            );
-        }
-
-
-        currentNote = {
-
-            id: Date.now(),
-
-            title:
-                topic ||
-                (pdfFile.files.length
-                    ? pdfFile.files[0].name
-                    : "Study Notes"),
-
-            content: generatedText,
-
-            createdAt:
-                new Date().toISOString()
-
-        };
-
-
-        resultTitle.textContent =
-            currentNote.title;
-
-
-        await renderContent(
-            notes,
-            generatedText
-        );
-
-
-        resultCard.classList.add("active");
-
-        resultCard.scrollIntoView({
+        window.scrollTo({
+            top: 0,
             behavior: "smooth"
         });
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(
-            error.message ||
-            "Something went wrong while creating notes."
-        );
-
-    } finally {
-
-        generateButton.disabled = false;
-
-        loading.classList.remove("active");
     }
 
-});
 
+    function setActiveNav(button) {
 
-/* =========================================================
-   LOCAL STORAGE
-   ========================================================= */
+        document
+            .querySelectorAll(".nav-button")
+            .forEach(item => {
+                item.classList.remove("active");
+            });
 
-function getSavedNotes() {
-
-    try {
-
-        return JSON.parse(
-            localStorage.getItem("studyNotes") || "[]"
-        );
-
-    } catch {
-
-        return [];
+        button.classList.add("active");
     }
-}
 
 
-function saveNotes(notesArray) {
+    generateTab.addEventListener(
+        "click",
+        () => {
 
-    localStorage.setItem(
-        "studyNotes",
-        JSON.stringify(notesArray)
-    );
-}
+            showPage(generatePage);
 
-
-/* =========================
-   SAVE CURRENT NOTE
-   ========================= */
-
-document
-    .getElementById("saveButton")
-    .addEventListener("click", () => {
-
-        if (!currentNote) return;
-
-        const saved =
-            getSavedNotes();
-
-        const existing =
-            saved.find(
-                note => note.id === currentNote.id
-            );
-
-
-        if (!existing) {
-
-            saved.unshift(currentNote);
-
-            saveNotes(saved);
-
-            alert("Note saved to Your Notes.");
-
-        } else {
-
-            alert("This note is already saved.");
+            setActiveNav(generateTab);
 
         }
-
-        renderSavedNotes();
-    });
+    );
 
 
-/* =========================================================
-   COPY
-   ========================================================= */
+    learnTab.addEventListener(
+        "click",
+        () => {
 
-document
-    .getElementById("copyButton")
-    .addEventListener("click", async () => {
+            showPage(learnPage);
 
-        if (!currentNote) return;
+            setActiveNav(learnTab);
 
-        try {
+        }
+    );
 
-            await navigator.clipboard.writeText(
-                currentNote.content
+
+    booksTab.addEventListener(
+        "click",
+        () => {
+
+            showPage(booksPage);
+
+            setActiveNav(booksTab);
+
+        }
+    );
+
+
+    yourNotesTab.addEventListener(
+        "click",
+        () => {
+
+            showPage(yourNotesPage);
+
+            setActiveNav(yourNotesTab);
+
+            renderSavedNotes();
+
+        }
+    );
+
+
+    /* =================================================
+       THEME
+    ================================================= */
+
+    const savedTheme =
+        localStorage.getItem("aiNotesTheme");
+
+    if (savedTheme === "dark") {
+
+        document.body.classList.add(
+            "dark-mode"
+        );
+
+        themeButton.textContent = "☀";
+
+    }
+
+
+    themeButton.addEventListener(
+        "click",
+        () => {
+
+            const dark =
+                document.body.classList.toggle(
+                    "dark-mode"
+                );
+
+            themeButton.textContent =
+                dark ? "☀" : "☾";
+
+            localStorage.setItem(
+                "aiNotesTheme",
+                dark ? "dark" : "light"
             );
 
-            alert("Notes copied.");
+        }
+    );
 
-        } catch {
 
-            alert("Could not copy the notes.");
+    /* =================================================
+       PDF FILE
+    ================================================= */
+
+    pdfFile.addEventListener(
+        "change",
+        () => {
+
+            if (!pdfFile.files.length) {
+
+                fileName.textContent =
+                    "Use a textbook, chapter or study material";
+
+                return;
+            }
+
+            fileName.textContent =
+                pdfFile.files[0].name;
+
+        }
+    );
+
+
+    /* =================================================
+       MARKDOWN RENDERER
+    ================================================= */
+
+    function escapeHtml(text) {
+
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+    }
+
+
+    function renderMarkdown(markdown) {
+
+        if (!markdown) {
+            return "";
         }
 
-    });
+        let html =
+            escapeHtml(markdown);
 
 
-/* =========================================================
-   PRINT / PDF
-   ========================================================= */
+        /* CODE BLOCKS */
 
-function downloadAsPdf(title, content) {
-
-    const popup =
-        window.open("", "_blank");
-
-    if (!popup) {
-
-        alert(
-            "Please allow pop-ups to download the PDF."
+        html = html.replace(
+            /```([\s\S]*?)```/g,
+            "<pre><code>$1</code></pre>"
         );
 
-        return;
-    }
 
+        /* HEADINGS */
 
-    popup.document.write(`
-        <!DOCTYPE html>
-
-        <html>
-
-        <head>
-
-            <title>${escapeHtml(title)}</title>
-
-            <style>
-
-                body {
-                    margin: 0;
-                    padding: 40px;
-                    background: #fffdf7;
-                    color: #29352f;
-                    font-family: Georgia, serif;
-                    line-height: 1.8;
-                }
-
-                h1 {
-                    color: #075c43;
-                }
-
-                h2 {
-                    color: #007c78;
-                    border-bottom: 2px solid #cfe9df;
-                    padding-bottom: 7px;
-                }
-
-                h3 {
-                    color: #16735e;
-                }
-
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-
-                th,
-                td {
-                    border: 1px solid #ccc;
-                    padding: 8px;
-                }
-
-                th {
-                    background: #e4f4ef;
-                }
-
-                blockquote {
-                    border-left: 4px solid #008c95;
-                    padding-left: 15px;
-                    background: #eef9f5;
-                }
-
-            </style>
-
-        </head>
-
-        <body>
-
-            <h1>${escapeHtml(title)}</h1>
-
-            ${markdownToHtml(content)}
-
-            <script>
-
-                window.onload = function() {
-
-                    setTimeout(function() {
-                        window.print();
-                    }, 500);
-
-                };
-
-            <\/script>
-
-        </body>
-
-        </html>
-    `);
-
-    popup.document.close();
-}
-
-
-document
-    .getElementById("downloadButton")
-    .addEventListener("click", () => {
-
-        if (!currentNote) return;
-
-        downloadAsPdf(
-            currentNote.title,
-            currentNote.content
+        html = html.replace(
+            /^### (.*)$/gm,
+            "<h3>$1</h3>"
         );
 
-    });
-
-
-/* =========================================================
-   LEARN MODE
-   ========================================================= */
-
-let selectedLearnMode = "teach";
-
-
-const learningModes =
-    document.querySelectorAll(".learning-mode");
-
-
-learningModes.forEach(button => {
-
-    button.addEventListener("click", () => {
-
-        learningModes.forEach(
-            item => item.classList.remove("selected")
+        html = html.replace(
+            /^## (.*)$/gm,
+            "<h2>$1</h2>"
         );
 
-        button.classList.add("selected");
-
-        selectedLearnMode =
-            button.dataset.mode;
-
-    });
-
-});
+        html = html.replace(
+            /^# (.*)$/gm,
+            "<h1>$1</h1>"
+        );
 
 
-/* =========================================================
-   LEARN GENERATOR
-   ========================================================= */
+        /* BOLD */
 
-const generateLearnButton =
-    document.getElementById(
-        "generateLearnButton"
-    );
-
-const learnLoading =
-    document.getElementById(
-        "learnLoading"
-    );
-
-const learnResult =
-    document.getElementById(
-        "learnResult"
-    );
-
-const learnContent =
-    document.getElementById(
-        "learnContent"
-    );
-
-const learnResultTitle =
-    document.getElementById(
-        "learnResultTitle"
-    );
+        html = html.replace(
+            /\*\*(.*?)\*\*/g,
+            "<strong>$1</strong>"
+        );
 
 
-let currentLearnMaterial = null;
+        /* ITALIC */
+
+        html = html.replace(
+            /\*(.*?)\*/g,
+            "<em>$1</em>"
+        );
 
 
-function buildLearnPrompt(
-    grade,
-    topic,
-    mode
-) {
+        /* BULLET LIST */
 
-    if (mode === "teach") {
+        html = html.replace(
+            /(?:^|\n)([-•]) (.*)/g,
+            "<li>$2</li>"
+        );
 
-        return `
-You are an excellent school teacher.
+        html = html.replace(
+            /(<li>.*<\/li>)/gs,
+            "<ul>$1</ul>"
+        );
 
-Grade: ${grade}
-Topic: ${topic}
 
-Create a ONE-PAGE "Teach Me" lesson.
+        /* NUMBERED LIST */
 
-Explain the topic in a simple, student-friendly way.
+        html = html.replace(
+            /(?:^|\n)\d+\.\s+(.*)/g,
+            "<li>$1</li>"
+        );
 
-Requirements:
-- Start with a clear title.
-- Explain the core idea simply.
-- Use important definitions.
-- Explain the main concepts.
-- Give a simple example where useful.
-- Include important formulas if relevant.
-- Use bullet points where helpful.
-- Highlight important keywords.
-- Keep the complete response suitable for ONE PAGE.
-- Do not add unnecessary information.
-- Do not mention that AI created the material.
-`;
+
+        /* PARAGRAPHS */
+
+        html = html
+            .split(/\n{2,}/)
+            .map(block => {
+
+                block = block.trim();
+
+                if (!block) {
+                    return "";
+                }
+
+                if (
+                    block.startsWith("<h1>") ||
+                    block.startsWith("<h2>") ||
+                    block.startsWith("<h3>") ||
+                    block.startsWith("<ul>") ||
+                    block.startsWith("<pre>")
+                ) {
+                    return block;
+                }
+
+                return `<p>${block.replace(
+                    /\n/g,
+                    "<br>"
+                )}</p>`;
+
+            })
+            .join("");
+
+
+        return html;
 
     }
 
 
-    if (mode === "revision") {
+    /* =================================================
+       GENERATE NOTES
+    ================================================= */
 
-        return `
-You are creating an exam-focused QUICK REVISION SHEET.
+    generateButton.addEventListener(
+        "click",
+        async () => {
 
-Grade: ${grade}
-Topic: ${topic}
-
-Create a ONE-PAGE revision sheet.
-
-Include only the highest-value information:
-- Key definitions
-- Important facts
-- Main concepts
-- Formulas
-- Keywords
-- Important dates/names if relevant
-- Important differences
-- Exam tips
-- One or two examples if essential
-
-Use compact headings and bullet points.
-
-The entire response MUST fit on ONE PAGE.
-
-Do not add unnecessary explanation.
-Do not mention that AI created the material.
-`;
-
-    }
+            const topicValue =
+                topic.value.trim();
 
 
-    return `
-You are creating a ONE-PAGE CONCEPT MAP.
+            if (
+                !topicValue &&
+                !pdfFile.files.length
+            ) {
 
-Grade: ${grade}
-Topic: ${topic}
+                alert(
+                    "Please enter a topic or upload a PDF."
+                );
 
-Create a clear visual concept map using Mermaid flowchart syntax.
+                topic.focus();
 
-Requirements:
-- Start with the main topic.
-- Connect the major concepts.
-- Show relationships between ideas.
-- Include important sub-concepts.
-- Keep it simple enough for a school student.
-- The complete map must fit on ONE PAGE.
-- Also provide a very short "Key Takeaways" section.
+                return;
+            }
 
-IMPORTANT:
-Return the Mermaid diagram inside:
-
-\`\`\`mermaid
-
-flowchart TD
-    ...
-
-\`\`\`
-
-Do not use unsupported Mermaid syntax.
-Do not mention that AI created the material.
-`;
-
-}
-
-
-/* =========================
-   GENERATE LEARN
-   ========================= */
-
-generateLearnButton.addEventListener(
-    "click",
-    async () => {
-
-        const grade =
-            document.getElementById(
-                "learnGrade"
-            ).value;
-
-        const topic =
-            document.getElementById(
-                "learnTopic"
-            ).value.trim();
-
-
-        if (!topic) {
-
-            alert(
-                "Please enter a topic or chapter."
-            );
-
-            return;
-        }
-
-
-        const prompt =
-            buildLearnPrompt(
-                grade,
-                topic,
-                selectedLearnMode
-            );
-
-
-        generateLearnButton.disabled = true;
-
-        learnLoading.classList.add("active");
-
-        learnResult.classList.remove("active");
-
-
-        try {
 
             const formData =
                 new FormData();
 
+
             formData.append(
                 "topic",
-                prompt
+                topicValue
             );
 
             formData.append(
                 "level",
-                grade
+                level.value
             );
 
             formData.append(
                 "length",
-                "short"
+                length.value
             );
 
             formData.append(
-                "mcq",
-                "false"
+                "includeMCQ",
+                mcq.checked
             );
 
             formData.append(
-                "flashcards",
-                "false"
+                "includeFlashcards",
+                flashcards.checked
             );
 
 
-            const response =
-                await fetch(
-                    "/api/generate",
-                    {
-                        method: "POST",
-                        body: formData
-                    }
-                );
+            if (pdfFile.files.length) {
 
-
-            const data =
-                await response.json();
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    data.error ||
-                    data.message ||
-                    "Could not create learning material."
+                formData.append(
+                    "pdf",
+                    pdfFile.files[0]
                 );
 
             }
 
 
-            const generatedText =
-                data.notes ||
-                data.text ||
-                data.result;
+            loading.classList.add("show");
+
+            resultCard.classList.remove("show");
+
+            generateButton.disabled = true;
+
+            generateButton.style.opacity =
+                "0.65";
 
 
-            if (!generatedText) {
+            try {
 
-                throw new Error(
-                    "The server returned no learning material."
+                const response =
+                    await fetch(
+                        "/api/generate",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.error ||
+                        "Unable to generate notes."
+                    );
+
+                }
+
+
+                notes.innerHTML =
+                    renderMarkdown(
+                        data.notes || ""
+                    );
+
+
+                resultTitle.textContent =
+                    topicValue ||
+                    "Your Study Notes";
+
+
+                resultCard.classList.add(
+                    "show"
                 );
+
+
+                resultCard.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+
+                if (
+                    window.MathJax &&
+                    window.MathJax.typesetPromise
+                ) {
+
+                    await window.MathJax
+                        .typesetPromise([
+                            notes
+                        ]);
+
+                }
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    error.message ||
+                    "Something went wrong."
+                );
+
+            } finally {
+
+                loading.classList.remove(
+                    "show"
+                );
+
+                generateButton.disabled =
+                    false;
+
+                generateButton.style.opacity =
+                    "1";
 
             }
 
-
-            const modeName =
-                selectedLearnMode === "teach"
-                    ? "Teach Me"
-                    : selectedLearnMode === "revision"
-                        ? "Quick Revision Sheet"
-                        : "Concept Map";
+        }
+    );
 
 
-            currentLearnMaterial = {
+    /* =================================================
+       LEARNING MODES
+    ================================================= */
 
-                id: Date.now(),
-
-                title:
-                    `${topic} — ${modeName}`,
-
-                content:
-                    generatedText,
-
-                createdAt:
-                    new Date().toISOString()
-
-            };
+    let selectedLearningMode =
+        "teach";
 
 
-            learnResultTitle.textContent =
-                currentLearnMaterial.title;
+    function selectLearningMode(
+        button,
+        mode
+    ) {
 
-
-            await renderContent(
-                learnContent,
-                generatedText
-            );
-
-
-            learnResult.classList.add(
-                "active"
-            );
-
-
-            learnResult.scrollIntoView({
-                behavior: "smooth"
+        document
+            .querySelectorAll(
+                ".learning-mode"
+            )
+            .forEach(item => {
+                item.classList.remove(
+                    "selected"
+                );
             });
 
 
-        } catch (error) {
+        button.classList.add(
+            "selected"
+        );
 
-            console.error(error);
 
-            alert(
-                error.message ||
-                "Could not create learning material."
+        selectedLearningMode =
+            mode;
+
+    }
+
+
+    teachMode.addEventListener(
+        "click",
+        () => {
+
+            selectLearningMode(
+                teachMode,
+                "teach"
             );
 
-        } finally {
+        }
+    );
 
-            generateLearnButton.disabled = false;
 
-            learnLoading.classList.remove("active");
+    revisionMode.addEventListener(
+        "click",
+        () => {
+
+            selectLearningMode(
+                revisionMode,
+                "revision"
+            );
+
+        }
+    );
+
+
+    conceptMode.addEventListener(
+        "click",
+        () => {
+
+            selectLearningMode(
+                conceptMode,
+                "concept"
+            );
+
+        }
+    );
+
+
+    /* =================================================
+       TEACH ME / LEARN
+    ================================================= */
+
+    generateLearnButton.addEventListener(
+        "click",
+        async () => {
+
+            const topicValue =
+                learnTopic.value.trim();
+
+
+            if (!topicValue) {
+
+                alert(
+                    "Please enter a topic or chapter first."
+                );
+
+                learnTopic.focus();
+
+                return;
+            }
+
+
+            learnLoading.classList.add(
+                "show"
+            );
+
+            learnResult.classList.remove(
+                "show"
+            );
+
+            generateLearnButton.disabled =
+                true;
+
+            generateLearnButton.style.opacity =
+                "0.65";
+
+
+            try {
+
+                /*
+                 * The existing backend exposes
+                 * /api/generate.
+                 *
+                 * We use it for the Learn feature
+                 * and add the selected learning mode
+                 * to the topic instructions.
+                 */
+
+                let instruction = "";
+
+
+                if (
+                    selectedLearningMode ===
+                    "teach"
+                ) {
+
+                    instruction = `
+Teach me "${topicValue}" like a friendly school teacher.
+
+Explain the topic step by step in simple language suitable for ${learnGrade.value}.
+
+Start with the basic idea, then explain the important concepts.
+
+Use simple examples where helpful.
+
+Use clear headings and bullet points.
+
+Make difficult ideas easy to understand.
+
+End with a short "Remember" section containing the most important points.
+
+Do not assume the student already understands the topic.
+`;
+
+                    learnResultTitle.textContent =
+                        `Teach Me: ${topicValue}`;
+
+                }
+
+
+                else if (
+                    selectedLearningMode ===
+                    "revision"
+                ) {
+
+                    instruction = `
+Create a one-page quick revision sheet for "${topicValue}".
+
+The student is studying at ${learnGrade.value} level.
+
+Include the most important definitions, concepts, facts, formulas, examples and exam points.
+
+Use short headings and bullet points.
+
+Keep it concise and easy to revise quickly.
+`;
+
+                    learnResultTitle.textContent =
+                        `Quick Revision: ${topicValue}`;
+
+                }
+
+
+                else {
+
+                    instruction = `
+Create a clear concept map style explanation for "${topicValue}".
+
+The student is studying at ${learnGrade.value} level.
+
+Show the main concept first and then connect it to its important sub-concepts.
+
+Use headings, arrows, relationships and bullet points where useful.
+
+Explain the connections in simple language.
+
+Make the structure easy to understand and remember.
+`;
+
+                    learnResultTitle.textContent =
+                        `Concept Map: ${topicValue}`;
+
+                }
+
+
+                const formData =
+                    new FormData();
+
+
+                formData.append(
+                    "topic",
+                    instruction
+                );
+
+                formData.append(
+                    "level",
+                    learnGrade.value
+                );
+
+                formData.append(
+                    "length",
+                    "medium"
+                );
+
+                formData.append(
+                    "includeMCQ",
+                    "false"
+                );
+
+                formData.append(
+                    "includeFlashcards",
+                    "false"
+                );
+
+
+                const response =
+                    await fetch(
+                        "/api/generate",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.error ||
+                        "Unable to create learning material."
+                    );
+
+                }
+
+
+                learnContent.innerHTML =
+                    renderMarkdown(
+                        data.notes || ""
+                    );
+
+
+                learnResult.classList.add(
+                    "show"
+                );
+
+
+                learnResult.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+
+                if (
+                    window.MathJax &&
+                    window.MathJax.typesetPromise
+                ) {
+
+                    await window.MathJax
+                        .typesetPromise([
+                            learnContent
+                        ]);
+
+                }
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    error.message ||
+                    "Something went wrong while creating the lesson."
+                );
+
+            } finally {
+
+                learnLoading.classList.remove(
+                    "show"
+                );
+
+                generateLearnButton.disabled =
+                    false;
+
+                generateLearnButton.style.opacity =
+                    "1";
+
+            }
+
+        }
+    );
+
+
+    /* =================================================
+       COPY NOTES
+    ================================================= */
+
+    const copyButton =
+        document.getElementById(
+            "copyButton"
+        );
+
+
+    copyButton.addEventListener(
+        "click",
+        async () => {
+
+            const text =
+                notes.innerText.trim();
+
+
+            if (!text) {
+                return;
+            }
+
+
+            try {
+
+                await navigator.clipboard
+                    .writeText(text);
+
+                copyButton.textContent =
+                    "✓ Copied";
+
+                setTimeout(() => {
+
+                    copyButton.textContent =
+                        "📋 Copy";
+
+                }, 1500);
+
+            } catch {
+
+                alert(
+                    "Copy failed. Please select the text manually."
+                );
+
+            }
+
+        }
+    );
+
+
+    /* =================================================
+       SAVE NOTES
+    ================================================= */
+
+    const saveButton =
+        document.getElementById(
+            "saveButton"
+        );
+
+
+    function getSavedNotes() {
+
+        try {
+
+            return JSON.parse(
+                localStorage.getItem(
+                    "aiNotesSaved"
+                ) || "[]"
+            );
+
+        } catch {
+
+            return [];
 
         }
 
     }
-);
 
 
-/* =========================================================
-   SAVE LEARN MATERIAL
-   ========================================================= */
+    function saveNote(
+        title,
+        content
+    ) {
 
-document
-    .getElementById("saveLearnButton")
-    .addEventListener("click", () => {
-
-        if (!currentLearnMaterial) return;
-
-
-        const saved =
+        const items =
             getSavedNotes();
 
 
-        const existing =
-            saved.find(
-                note =>
-                    note.id === currentLearnMaterial.id
+        const note = {
+            id: Date.now(),
+            title: title,
+            content: content,
+            createdAt:
+                new Date().toISOString()
+        };
+
+
+        items.unshift(note);
+
+
+        localStorage.setItem(
+            "aiNotesSaved",
+            JSON.stringify(items)
+        );
+
+    }
+
+
+    saveButton.addEventListener(
+        "click",
+        () => {
+
+            const content =
+                notes.innerText.trim();
+
+
+            if (!content) {
+                return;
+            }
+
+
+            saveNote(
+                resultTitle.textContent ||
+                "Study Notes",
+                content
             );
 
 
-        if (!existing) {
+            saveButton.textContent =
+                "✓ Saved";
 
-            saved.unshift(
-                currentLearnMaterial
+
+            setTimeout(() => {
+
+                saveButton.textContent =
+                    "💾 Save";
+
+            }, 1500);
+
+        }
+    );
+
+
+    /* =================================================
+       SAVE LEARNING MATERIAL
+    ================================================= */
+
+    const saveLearnButton =
+        document.getElementById(
+            "saveLearnButton"
+        );
+
+
+    saveLearnButton.addEventListener(
+        "click",
+        () => {
+
+            const content =
+                learnContent.innerText.trim();
+
+
+            if (!content) {
+                return;
+            }
+
+
+            saveNote(
+                learnResultTitle.textContent ||
+                "Learning Material",
+                content
             );
 
-            saveNotes(saved);
 
-            alert(
-                "Learning material saved to Your Notes."
-            );
+            saveLearnButton.textContent =
+                "✓ Saved";
 
-        } else {
 
-            alert(
-                "This material is already saved."
+            setTimeout(() => {
+
+                saveLearnButton.textContent =
+                    "💾 Save";
+
+            }, 1500);
+
+        }
+    );
+
+
+    /* =================================================
+       YOUR NOTES
+    ================================================= */
+
+    function renderSavedNotes() {
+
+        const items =
+            getSavedNotes();
+
+
+        savedNotes.innerHTML = "";
+
+
+        if (!items.length) {
+
+            emptyNotes.style.display =
+                "block";
+
+            return;
+
+        }
+
+
+        emptyNotes.style.display =
+            "none";
+
+
+        const search =
+            notesSearch.value
+                .trim()
+                .toLowerCase();
+
+
+        let filtered =
+            items.filter(item => {
+
+                return (
+                    item.title
+                        .toLowerCase()
+                        .includes(search) ||
+
+                    item.content
+                        .toLowerCase()
+                        .includes(search)
+                );
+
+            });
+
+
+        const sort =
+            notesSort.value;
+
+
+        if (sort === "oldest") {
+
+            filtered.sort(
+                (a, b) =>
+                    a.createdAt.localeCompare(
+                        b.createdAt
+                    )
             );
 
         }
 
-    });
 
+        if (sort === "az") {
 
-/* =========================================================
-   DOWNLOAD LEARN MATERIAL
-   ========================================================= */
-
-document
-    .getElementById("downloadLearnButton")
-    .addEventListener("click", () => {
-
-        if (!currentLearnMaterial) return;
-
-        downloadAsPdf(
-            currentLearnMaterial.title,
-            currentLearnMaterial.content
-        );
-
-    });
-
-
-/* =========================================================
-   YOUR NOTES
-   ========================================================= */
-
-const savedNotesContainer =
-    document.getElementById(
-        "savedNotes"
-    );
-
-const emptyNotes =
-    document.getElementById(
-        "emptyNotes"
-    );
-
-
-function renderSavedNotes() {
-
-    const search =
-        document
-            .getElementById("notesSearch")
-            .value
-            .toLowerCase()
-            .trim();
-
-    const sort =
-        document
-            .getElementById("notesSort")
-            .value;
-
-
-    let saved =
-        getSavedNotes();
-
-
-    if (search) {
-
-        saved =
-            saved.filter(note =>
-                note.title
-                    .toLowerCase()
-                    .includes(search)
+            filtered.sort(
+                (a, b) =>
+                    a.title.localeCompare(
+                        b.title
+                    )
             );
 
-    }
+        }
 
 
-    if (sort === "newest") {
+        filtered.forEach(item => {
 
-        saved.sort(
-            (a,b) =>
-                new Date(b.createdAt) -
-                new Date(a.createdAt)
-        );
-
-    }
+            const card =
+                document.createElement(
+                    "div"
+                );
 
 
-    if (sort === "oldest") {
-
-        saved.sort(
-            (a,b) =>
-                new Date(a.createdAt) -
-                new Date(b.createdAt)
-        );
-
-    }
+            card.className =
+                "book-card";
 
 
-    if (sort === "az") {
+            card.style.alignItems =
+                "flex-start";
 
-        saved.sort(
-            (a,b) =>
-                a.title.localeCompare(
-                    b.title
-                )
-        );
-
-    }
+            card.style.textAlign =
+                "left";
 
 
-    savedNotesContainer.innerHTML = "";
+            card.innerHTML = `
+                <span class="book-symbol">📝</span>
+
+                <strong>
+                    ${escapeHtml(item.title)}
+                </strong>
+
+                <small>
+                    Saved ${new Date(
+                        item.createdAt
+                    ).toLocaleDateString()}
+                </small>
+            `;
 
 
-    if (!saved.length) {
-
-        emptyNotes.style.display =
-            "block";
-
-        return;
-
-    }
-
-
-    emptyNotes.style.display =
-        "none";
-
-
-    saved.forEach(note => {
-
-        const card =
-            document.createElement("div");
-
-        card.className =
-            "note-card";
-
-
-        card.innerHTML = `
-
-            <div class="note-card-title">
-                ${escapeHtml(note.title)}
-            </div>
-
-            <div class="note-card-meta">
-                ${new Date(note.createdAt).toLocaleDateString()}
-            </div>
-
-            <button
-                class="note-card-arrow"
-                data-note-id="${note.id}"
-            >
-                →
-            </button>
-
-            <div
-                class="note-menu"
-                id="menu-${note.id}"
-            >
-
-                <button
-                    data-action="open"
-                    data-note-id="${note.id}"
-                >
-                    📖 Open
-                </button>
-
-                <button
-                    data-action="save"
-                    data-note-id="${note.id}"
-                >
-                    💾 Save
-                </button>
-
-                <button
-                    data-action="download"
-                    data-note-id="${note.id}"
-                >
-                    ↓ Download as PDF
-                </button>
-
-            </div>
-
-        `;
-
-
-        savedNotesContainer.appendChild(
-            card
-        );
-
-    });
-
-
-    /* Arrow menus */
-
-    document
-        .querySelectorAll(".note-card-arrow")
-        .forEach(button => {
-
-            button.addEventListener(
+            card.addEventListener(
                 "click",
-                event => {
+                () => {
 
-                    event.stopPropagation();
-
-                    const id =
-                        button.dataset.noteId;
-
-                    const menu =
-                        document.getElementById(
-                            `menu-${id}`
-                        );
-
-
-                    document
-                        .querySelectorAll(".note-menu")
-                        .forEach(
-                            item =>
-                                item.classList.remove(
-                                    "open"
-                                )
-                        );
-
-
-                    menu.classList.toggle(
-                        "open"
+                    openReading(
+                        item.title,
+                        item.content
                     );
 
                 }
             );
 
-        });
 
-
-    /* Menu actions */
-
-    document
-        .querySelectorAll(".note-menu button")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const id =
-                        Number(
-                            button.dataset.noteId
-                        );
-
-                    const action =
-                        button.dataset.action;
-
-                    const note =
-                        getSavedNotes().find(
-                            item =>
-                                item.id === id
-                        );
-
-
-                    if (!note) return;
-
-
-                    if (action === "open") {
-
-                        openReadingPage(note);
-
-                    }
-
-
-                    if (action === "save") {
-
-                        saveNotes(
-                            getSavedNotes().filter(
-                                item =>
-                                    item.id !== id
-                            ).concat(note)
-                        );
-
-                        alert(
-                            "Note saved."
-                        );
-
-                    }
-
-
-                    if (action === "download") {
-
-                        downloadAsPdf(
-                            note.title,
-                            note.content
-                        );
-
-                    }
-
-                }
+            savedNotes.appendChild(
+                card
             );
 
         });
 
-}
+    }
 
 
-/* Search */
-
-document
-    .getElementById("notesSearch")
-    .addEventListener(
+    notesSearch.addEventListener(
         "input",
         renderSavedNotes
     );
 
 
-/* Sort */
-
-document
-    .getElementById("notesSort")
-    .addEventListener(
+    notesSort.addEventListener(
         "change",
         renderSavedNotes
     );
 
 
-/* =========================================================
-   READING PAGE
-   ========================================================= */
+    startCreatingButton.addEventListener(
+        "click",
+        () => {
 
-let readingNote = null;
+            showPage(generatePage);
 
+            setActiveNav(
+                generateTab
+            );
 
-async function openReadingPage(note) {
-
-    readingNote = note;
-
-
-    hideAllPages();
-
-
-    readingPage.classList.add(
-        "active"
+        }
     );
 
 
-    document.getElementById(
-        "readingTitle"
-    ).textContent = note.title;
+    /* =================================================
+       READING
+    ================================================= */
+
+    function openReading(
+        title,
+        content
+    ) {
+
+        document
+            .querySelectorAll(".page")
+            .forEach(item => {
+                item.classList.remove(
+                    "active-page"
+                );
+            });
 
 
-    await renderContent(
-        document.getElementById(
-            "readingContent"
-        ),
-        note.content
-    );
+        readingPage.classList.add(
+            "active"
+        );
 
 
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-}
+        readingTitle.textContent =
+            title;
 
 
-/* Back */
+        readingContent.innerHTML =
+            renderMarkdown(
+                content
+            );
 
-document
-    .getElementById(
-        "backToNotesButton"
-    )
-    .addEventListener(
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+
+    backToNotesButton.addEventListener(
         "click",
         () => {
 
@@ -1469,8 +1301,8 @@ document
                 yourNotesPage
             );
 
-            yourNotesTab.classList.add(
-                "active"
+            setActiveNav(
+                yourNotesTab
             );
 
             renderSavedNotes();
@@ -1479,244 +1311,289 @@ document
     );
 
 
-/* Reading Save */
+    /* =================================================
+       BOOK TABS
+    ================================================= */
 
-document
-    .getElementById(
-        "readingSaveButton"
-    )
-    .addEventListener(
+    document
+        .querySelectorAll(".grade-tab")
+        .forEach(tab => {
+
+            tab.addEventListener(
+                "click",
+                () => {
+
+                    const grade =
+                        tab.dataset.grade;
+
+
+                    document
+                        .querySelectorAll(
+                            ".grade-tab"
+                        )
+                        .forEach(item => {
+                            item.classList.remove(
+                                "active"
+                            );
+                        });
+
+
+                    tab.classList.add(
+                        "active"
+                    );
+
+
+                    document
+                        .querySelectorAll(
+                            ".book-grade"
+                        )
+                        .forEach(book => {
+                            book.classList.remove(
+                                "active"
+                            );
+                        });
+
+
+                    const selected =
+                        document.getElementById(
+                            `booksGrade${grade}`
+                        );
+
+
+                    if (selected) {
+
+                        selected.classList.add(
+                            "active"
+                        );
+
+                    }
+
+                }
+            );
+
+        });
+
+
+    /* =================================================
+       BOOK PDF LABELS
+    ================================================= */
+
+    document
+        .querySelectorAll(
+            ".book-card input[type='file']"
+        )
+        .forEach(input => {
+
+            input.addEventListener(
+                "change",
+                () => {
+
+                    if (!input.files.length) {
+                        return;
+                    }
+
+
+                    const card =
+                        input.closest(
+                            ".book-card"
+                        );
+
+
+                    const small =
+                        card.querySelector(
+                            "small"
+                        );
+
+
+                    if (small) {
+
+                        small.textContent =
+                            input.files[0].name;
+
+                    }
+
+                }
+            );
+
+        });
+
+
+    /* =================================================
+       DOWNLOAD AS TEXT FILE
+       (SAFE CLIENT-SIDE FALLBACK)
+    ================================================= */
+
+    function downloadText(
+        filename,
+        content
+    ) {
+
+        const blob =
+            new Blob(
+                [content],
+                {
+                    type:
+                        "text/plain;charset=utf-8"
+                }
+            );
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+
+        link.href = url;
+
+        link.download =
+            filename;
+
+
+        document.body.appendChild(
+            link
+        );
+
+
+        link.click();
+
+        link.remove();
+
+
+        URL.revokeObjectURL(
+            url
+        );
+
+    }
+
+
+    const downloadButton =
+        document.getElementById(
+            "downloadButton"
+        );
+
+
+    downloadButton.addEventListener(
         "click",
         () => {
 
-            if (!readingNote) return;
-
-            const saved =
-                getSavedNotes();
+            const content =
+                notes.innerText.trim();
 
 
-            if (
-                !saved.some(
-                    note =>
-                        note.id === readingNote.id
-                )
-            ) {
-
-                saved.unshift(
-                    readingNote
-                );
-
-                saveNotes(saved);
-
+            if (!content) {
+                return;
             }
 
-            alert("Note saved.");
 
-        }
-    );
-
-
-/* Reading Download */
-
-document
-    .getElementById(
-        "readingDownloadButton"
-    )
-    .addEventListener(
-        "click",
-        () => {
-
-            if (!readingNote) return;
-
-            downloadAsPdf(
-                readingNote.title,
-                readingNote.content
+            downloadText(
+                "ai-study-notes.txt",
+                content
             );
 
         }
     );
 
 
-/* =========================================================
-   CREATE NOTES BUTTON
-   ========================================================= */
+    const downloadLearnButton =
+        document.getElementById(
+            "downloadLearnButton"
+        );
 
-document
-    .getElementById(
-        "startCreatingButton"
-    )
-    .addEventListener(
+
+    downloadLearnButton.addEventListener(
         "click",
         () => {
 
-            showPage(
-                generatePage
-            );
+            const content =
+                learnContent.innerText.trim();
 
-            generateTab.classList.add(
-                "active"
+
+            if (!content) {
+                return;
+            }
+
+
+            downloadText(
+                "ai-learning-material.txt",
+                content
             );
 
         }
     );
 
 
-/* =========================================================
-   BOOK GRADE TABS
-   ========================================================= */
-
-const gradeTabs =
-    document.querySelectorAll(
-        ".grade-tab"
-    );
+    const readingDownloadButton =
+        document.getElementById(
+            "readingDownloadButton"
+        );
 
 
-const bookGrades =
-    document.querySelectorAll(
-        ".book-grade"
-    );
-
-
-gradeTabs.forEach(tab => {
-
-    tab.addEventListener(
+    readingDownloadButton.addEventListener(
         "click",
         () => {
 
-            const grade =
-                tab.dataset.grade;
+            const content =
+                readingContent.innerText.trim();
 
 
-            gradeTabs.forEach(
-                item =>
-                    item.classList.remove(
-                        "active"
-                    )
+            if (!content) {
+                return;
+            }
+
+
+            downloadText(
+                "saved-ai-notes.txt",
+                content
+            );
+
+        }
+    );
+
+
+    const readingSaveButton =
+        document.getElementById(
+            "readingSaveButton"
+        );
+
+
+    readingSaveButton.addEventListener(
+        "click",
+        () => {
+
+            const content =
+                readingContent.innerText.trim();
+
+
+            if (!content) {
+                return;
+            }
+
+
+            saveNote(
+                readingTitle.textContent,
+                content
             );
 
 
-            bookGrades.forEach(
-                item =>
-                    item.classList.remove(
-                        "active"
-                    )
-            );
+            readingSaveButton.textContent =
+                "✓ Saved";
 
 
-            tab.classList.add(
-                "active"
-            );
+            setTimeout(() => {
 
+                readingSaveButton.textContent =
+                    "💾 Save";
 
-            document
-                .getElementById(
-                    `booksGrade${grade}`
-                )
-                .classList.add(
-                    "active"
-                );
+            }, 1500);
 
         }
     );
 
 });
-
-
-/* =========================================================
-   BOOK PDF SELECTION
-   ========================================================= */
-
-document
-    .querySelectorAll(
-        ".book-card input[type='file']"
-    )
-    .forEach(input => {
-
-        input.addEventListener(
-            "change",
-            () => {
-
-                if (!input.files.length)
-                    return;
-
-
-                const card =
-                    input.closest(
-                        ".book-card"
-                    );
-
-
-                const small =
-                    card.querySelector(
-                        "small"
-                    );
-
-
-                small.textContent =
-                    "✓ " +
-                    input.files[0].name;
-
-
-                card.style.borderColor =
-                    "#087f5b";
-
-
-                /*
-                 IMPORTANT:
-
-                 At this stage the PDF is selected
-                 only in the browser.
-
-                 The next backend upgrade will upload
-                 this PDF to your server/storage and
-                 connect it to the AI.
-                */
-
-            }
-        );
-
-    });
-
-
-/* =========================================================
-   THEME
-   ========================================================= */
-
-themeButton.addEventListener(
-    "click",
-    () => {
-
-        document.body.classList.toggle(
-            "dark"
-        );
-
-
-        localStorage.setItem(
-            "darkMode",
-            document.body.classList.contains(
-                "dark"
-            )
-        );
-
-    }
-);
-
-
-if (
-    localStorage.getItem(
-        "darkMode"
-    ) === "true"
-) {
-
-    document.body.classList.add(
-        "dark"
-    );
-
-}
-
-
-/* =========================================================
-   INITIALIZE
-   ========================================================= */
-
-renderSavedNotes();
