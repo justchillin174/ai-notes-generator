@@ -4,866 +4,579 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AI Notes Generator</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <title>StudyAI — AI Notes Generator</title>
 
     <link rel="stylesheet" href="style.css">
 
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-    <script>
-        mermaid.initialize({
-            startOnLoad: false,
-            securityLevel: "loose"
-        });
-    </script>
-
-    <script>
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']]
-            }
-        };
-    </script>
-
-    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
 <body>
 
-<header class="top-header">
-
-    <div class="brand">
-        <div class="brand-icon">✦</div>
-        <div>
-            <h1>AI Notes</h1>
-            <span>Smart Study Assistant</span>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-icon">📚</span>
+            <span>StudyAI</span>
         </div>
-    </div>
 
-    <nav class="main-nav">
-
-        <button class="nav-button active" id="generateTab">
-            ✨ Generate Notes
-        </button>
-
-        <button class="nav-button" id="learnTab">
-            🧠 Learn
-        </button>
-
-        <button class="nav-button" id="booksTab">
-            📚 Books
-        </button>
-
-        <button class="nav-button" id="yourNotesTab">
-            📖 Your Notes
-        </button>
-
-        <button class="theme-button" id="themeButton">
-            ☾
-        </button>
-
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="notes">📝 Notes</button>
+            <button class="nav-tab" data-tab="books">📖 Books</button>
+        </div>
     </nav>
 
-</header>
 
+    <!-- MAIN -->
+    <main>
 
-<main class="main-container">
+        <!-- NOTES TAB -->
+        <section id="notesTab" class="tab-content active">
 
+            <div class="hero">
+                <div class="hero-badge">✨ AI-Powered Learning</div>
 
-    <!-- ========================= -->
-    <!-- GENERATE NOTES PAGE -->
-    <!-- ========================= -->
+                <h1>Turn any topic into<br><span>smart study notes.</span></h1>
 
-    <section id="generatePage" class="page active-page">
-
-        <div class="hero-section">
-
-            <div class="hero-badge">
-                ✨ AI-Powered Learning
+                <p>
+                    Generate clear, structured and exam-ready notes
+                    using artificial intelligence.
+                </p>
             </div>
 
-            <h2>Create beautiful study notes</h2>
 
-            <p>
-                Turn any topic or textbook into clear, organized and
-                exam-friendly study material.
-            </p>
+            <!-- GENERATOR CARD -->
+            <div class="generator-card">
 
-        </div>
-
-
-        <div class="generator-card">
-
-            <label class="section-label">
-                What do you want to study?
-            </label>
-
-            <textarea
-                id="topic"
-                class="topic-input"
-                placeholder="Enter a topic, chapter or question..."
-            ></textarea>
-
-
-            <div class="upload-area">
-
-                <label for="pdfFile" class="upload-box">
-
-                    <div class="upload-icon">📄</div>
-
+                <div class="card-header">
                     <div>
-                        <strong>Upload a PDF</strong>
-                        <span id="fileName">
-                            Use a textbook, chapter or study material
-                        </span>
+                        <h2>Generate Your Notes</h2>
+                        <p>Enter any topic and let AI do the hard work.</p>
+                    </div>
+                </div>
+
+
+                <form id="notesForm">
+
+                    <!-- TOPIC -->
+                    <div class="form-group">
+                        <label for="topic">What do you want to learn?</label>
+
+                        <textarea
+                            id="topic"
+                            name="topic"
+                            rows="5"
+                            placeholder="Example: Photosynthesis, Newton's Laws, French Revolution..."
+                            required
+                        ></textarea>
                     </div>
 
-                    <input
-                        type="file"
-                        id="pdfFile"
-                        accept=".pdf"
-                        hidden
-                    >
 
-                </label>
+                    <!-- OPTIONS -->
+                    <div class="options-grid">
 
-            </div>
+                        <div class="form-group">
+                            <label for="level">Study Level</label>
 
-
-            <div class="options-grid">
-
-                <div class="option-group">
-
-                    <label>Grade / Level</label>
-
-                    <select id="level">
-                        <option value="Grade 6">Grade 6</option>
-                        <option value="Grade 7">Grade 7</option>
-                        <option value="Grade 8">Grade 8</option>
-                        <option value="Grade 9" selected>Grade 9</option>
-                        <option value="Grade 10">Grade 10</option>
-                        <option value="College">College</option>
-                        <option value="General">General</option>
-                    </select>
-
-                </div>
+                            <select id="level" name="level">
+                                <option value="school">School</option>
+                                <option value="middle-school">Middle School</option>
+                                <option value="high-school">High School</option>
+                                <option value="college">College</option>
+                                <option value="competitive">Competitive Exams</option>
+                            </select>
+                        </div>
 
 
-                <div class="option-group">
+                        <div class="form-group">
+                            <label for="length">Notes Length</label>
 
-                    <label>Note length</label>
+                            <select id="length" name="length">
+                                <option value="short">Short</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="long">Detailed</option>
+                            </select>
+                        </div>
 
-                    <select id="length">
-                        <option value="short">Short</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="detailed">Detailed</option>
-                    </select>
-
-                </div>
-
-            </div>
+                    </div>
 
 
-            <div class="extra-options">
+                    <!-- CHECKBOXES -->
+                    <div class="extra-options">
 
-                <label class="check-option">
-                    <input type="checkbox" id="mcq">
-                    <span>Generate MCQs</span>
-                </label>
-
-                <label class="check-option">
-                    <input type="checkbox" id="flashcards">
-                    <span>Create Flashcards</span>
-                </label>
-
-            </div>
-
-
-            <button id="generateButton" class="generate-button">
-                ✨ Generate Notes
-            </button>
-
-            <p class="patience-message">
-                *Notes may take some time to generate. Please keep some patience.
-                This problem will soon be solved. Thank you.
-            </p>
+                        <label class="checkbox-label">
+                            <input
+                                type="checkbox"
+                                id="includeMCQ"
+                                name="includeMCQ"
+                                checked
+                            >
+                            <span>Generate MCQs</span>
+                        </label>
 
 
-            <div id="loading" class="loading">
+                        <label class="checkbox-label">
+                            <input
+                                type="checkbox"
+                                id="includeFlashcards"
+                                name="includeFlashcards"
+                                checked
+                            >
+                            <span>Generate Flashcards</span>
+                        </label>
 
-                <div class="loading-spinner"></div>
-
-                <span>Creating notes...</span>
-
-            </div>
-
-        </div>
+                    </div>
 
 
-        <section id="resultCard" class="result-card">
+                    <!-- PDF UPLOAD -->
+                    <div class="upload-area">
 
-            <div class="result-header">
+                        <label for="pdfFile" class="upload-label">
 
-                <div>
-                    <span class="result-label">GENERATED MATERIAL</span>
-                    <h3 id="resultTitle">Your Study Notes</h3>
-                </div>
+                            <div class="upload-icon">📄</div>
 
-                <div class="result-actions">
+                            <div>
+                                <strong>Upload a PDF</strong>
 
-                    <button id="saveButton" class="small-button">
-                        💾 Save
+                                <p>
+                                    Optional — let AI create notes from your textbook or study material.
+                                </p>
+                            </div>
+
+                        </label>
+
+                        <input
+                            type="file"
+                            id="pdfFile"
+                            name="pdf"
+                            accept=".pdf"
+                            hidden
+                        >
+
+                        <div id="fileName" class="file-name"></div>
+
+                    </div>
+
+
+                    <!-- GENERATE BUTTON -->
+                    <button type="submit" class="generate-btn" id="generateBtn">
+
+                        <span id="generateIcon">✨</span>
+
+                        <span id="generateText">
+                            Generate Notes
+                        </span>
+
                     </button>
 
-                    <button id="copyButton" class="small-button">
-                        📋 Copy
-                    </button>
-
-                    <button id="downloadButton" class="small-button">
-                        ↓ PDF
-                    </button>
-
-                </div>
+                </form>
 
             </div>
 
 
-            <div id="notes" class="notes-content"></div>
+            <!-- RESULT -->
+            <section id="resultSection" class="result-section">
+
+                <div class="result-header">
+
+                    <div>
+                        <h2>Your Study Notes</h2>
+                        <p>AI-generated notes based on your topic.</p>
+                    </div>
+
+                    <div class="result-actions">
+
+                        <button id="copyBtn" class="action-btn">
+                            📋 Copy
+                        </button>
+
+                        <button id="downloadBtn" class="action-btn">
+                            ⬇️ Download
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div id="notesOutput" class="notes-output"></div>
+
+            </section>
 
         </section>
 
-    </section>
 
 
+        <!-- BOOKS TAB -->
+        <section id="booksTab" class="tab-content books-tab">
 
-    <!-- ========================= -->
-    <!-- LEARN PAGE -->
-    <!-- ========================= -->
+            <div class="books-container">
 
-    <section id="learnPage" class="page">
+                <div class="books-icon">
+                    📚
+                </div>
 
-        <div class="page-heading">
+                <div class="books-badge">
+                    🚧 Coming Soon
+                </div>
 
-            <div class="page-icon">🧠</div>
+                <h1>Books</h1>
 
-            <div>
-                <h2>Learn</h2>
-                <p>
-                    Understand any topic with an AI-powered learning mode.
+                <p class="books-message">
+                    <strong>Feature unavailable — Development in progress 🚧</strong>
                 </p>
-            </div>
 
-        </div>
-
-
-        <div class="learn-card">
-
-            <div class="learn-intro">
-                <span>SMART LEARNING</span>
-                <h3>How would you like to learn?</h3>
-                <p>
-                    Choose a grade, enter a topic and select a learning mode.
-                    The result is designed to fit on one page.
+                <p class="books-description">
+                    The Books feature is currently being developed.
+                    It will be available in a future update.
                 </p>
-            </div>
-
-
-            <div class="learn-form">
-
-                <div class="option-group">
-
-                    <label>Grade</label>
-
-                    <select id="learnGrade">
-
-                        <option value="Grade 6">Grade 6</option>
-                        <option value="Grade 7">Grade 7</option>
-                        <option value="Grade 8">Grade 8</option>
-                        <option value="Grade 9" selected>Grade 9</option>
-                        <option value="Grade 10">Grade 10</option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="option-group">
-
-                    <label>Topic / Chapter</label>
-
-                    <input
-                        id="learnTopic"
-                        type="text"
-                        placeholder="Example: Motion, Democracy, Algebra..."
-                    >
-
-                </div>
 
             </div>
-
-
-            <label class="section-label">
-                Choose your learning mode
-            </label>
-
-
-            <div class="learning-modes">
-
-                <button
-                    class="learning-mode selected"
-                    data-mode="teach"
-                    id="teachMode"
-                >
-
-                    <div class="mode-icon">👨‍🏫</div>
-
-                    <div>
-                        <strong>Teach Me</strong>
-                        <span>
-                            Learn the topic in a simple teacher-style explanation.
-                        </span>
-                    </div>
-
-                </button>
-
-
-                <button
-                    class="learning-mode"
-                    data-mode="revision"
-                    id="revisionMode"
-                >
-
-                    <div class="mode-icon">⚡</div>
-
-                    <div>
-                        <strong>Quick Revision Sheet</strong>
-                        <span>
-                            Get the most important points for fast revision.
-                        </span>
-                    </div>
-
-                </button>
-
-
-                <button
-                    class="learning-mode"
-                    data-mode="concept"
-                    id="conceptMode"
-                >
-
-                    <div class="mode-icon">🗺️</div>
-
-                    <div>
-                        <strong>Concept Map</strong>
-                        <span>
-                            See the topic as a connected visual structure.
-                        </span>
-                    </div>
-
-                </button>
-
-            </div>
-
-
-            <button id="generateLearnButton" class="generate-button learn-generate">
-                🧠 Start Learning
-            </button>
-
-
-            <div id="learnLoading" class="loading">
-
-                <div class="loading-spinner"></div>
-
-                <span>Creating learning material...</span>
-
-            </div>
-
-        </div>
-
-
-        <section id="learnResult" class="learn-result">
-
-            <div class="result-header">
-
-                <div>
-                    <span class="result-label">ONE-PAGE LEARNING</span>
-                    <h3 id="learnResultTitle">Learning Material</h3>
-                </div>
-
-                <div class="result-actions">
-
-                    <button id="saveLearnButton" class="small-button">
-                        💾 Save
-                    </button>
-
-                    <button id="downloadLearnButton" class="small-button">
-                        ↓ PDF
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <div id="learnContent" class="textbook-content"></div>
 
         </section>
 
-    </section>
+    </main>
 
 
 
-    <!-- ========================= -->
-    <!-- BOOKS PAGE -->
-    <!-- ========================= -->
+    <!-- FOOTER -->
+    <footer>
+        <p>Made with ❤️ for smarter learning</p>
+    </footer>
 
-    <section id="booksPage" class="page">
 
-        <div class="page-heading">
 
-            <div class="page-icon">📚</div>
+    <!-- JAVASCRIPT -->
+    <script>
 
-            <div>
-                <h2>Books</h2>
+        // ================================
+        // TAB SWITCHING
+        // ================================
 
-                <p>
-                    Organize your study books by grade and subject.
-                </p>
-            </div>
+        const navTabs = document.querySelectorAll(".nav-tab");
 
-        </div>
+        const notesTab = document.getElementById("notesTab");
+        const booksTab = document.getElementById("booksTab");
 
 
-        <div class="books-info">
+        navTabs.forEach(tab => {
 
-            <div class="books-info-icon">📖</div>
+            tab.addEventListener("click", () => {
 
-            <div>
+                navTabs.forEach(t => {
+                    t.classList.remove("active");
+                });
 
-                <strong>NCERT Library</strong>
+                tab.classList.add("active");
 
-                <p>
-                    Add your authorized NCERT study PDFs to the appropriate
-                    grade and subject.
-                </p>
 
-            </div>
+                const selectedTab = tab.dataset.tab;
 
-        </div>
 
+                if (selectedTab === "notes") {
 
-        <div class="grade-tabs">
+                    notesTab.classList.add("active");
+                    booksTab.classList.remove("active");
 
-            <button class="grade-tab active" data-grade="6">
-                Grade 6
-            </button>
+                }
 
-            <button class="grade-tab" data-grade="7">
-                Grade 7
-            </button>
+                else if (selectedTab === "books") {
 
-            <button class="grade-tab" data-grade="8">
-                Grade 8
-            </button>
+                    booksTab.classList.add("active");
+                    notesTab.classList.remove("active");
 
-            <button class="grade-tab" data-grade="9">
-                Grade 9
-            </button>
+                }
 
-            <button class="grade-tab" data-grade="10">
-                Grade 10
-            </button>
+            });
 
-        </div>
+        });
 
 
-        <!-- GRADE 6 -->
 
-        <div class="book-grade active" id="booksGrade6">
+        // ================================
+        // PDF FILE NAME
+        // ================================
 
-            <div class="book-grade-header">
-                <h3>Grade 6</h3>
-                <span>School Books</span>
-            </div>
+        const pdfFile = document.getElementById("pdfFile");
+        const fileName = document.getElementById("fileName");
 
-            <div class="book-grid">
 
-                <label class="book-card">
+        pdfFile.addEventListener("change", () => {
 
-                    <span class="book-symbol">➗</span>
-                    <strong>Mathematics</strong>
-                    <small>Add Mathematics PDF</small>
+            if (pdfFile.files.length > 0) {
 
-                    <input
-                        type="file"
-                        accept=".pdf"
-                        data-book-grade="6"
-                        data-book-subject="Mathematics"
-                        hidden
-                    >
+                fileName.textContent =
+                    "📎 " + pdfFile.files[0].name;
 
-                </label>
+            } else {
 
+                fileName.textContent = "";
 
-                <label class="book-card">
+            }
 
-                    <span class="book-symbol">🔬</span>
-                    <strong>Science</strong>
-                    <small>Add Science PDF</small>
+        });
 
-                    <input
-                        type="file"
-                        accept=".pdf"
-                        data-book-grade="6"
-                        data-book-subject="Science"
-                        hidden
-                    >
 
-                </label>
 
+        // ================================
+        // FORM SUBMISSION
+        // ================================
 
-                <label class="book-card">
+        const notesForm = document.getElementById("notesForm");
 
-                    <span class="book-symbol">🌍</span>
-                    <strong>Social Science</strong>
-                    <small>Add Social Science PDF</small>
+        const generateBtn =
+            document.getElementById("generateBtn");
 
-                    <input
-                        type="file"
-                        accept=".pdf"
-                        data-book-grade="6"
-                        data-book-subject="Social Science"
-                        hidden
-                    >
+        const generateText =
+            document.getElementById("generateText");
 
-                </label>
+        const generateIcon =
+            document.getElementById("generateIcon");
 
+        const resultSection =
+            document.getElementById("resultSection");
 
-                <label class="book-card">
+        const notesOutput =
+            document.getElementById("notesOutput");
 
-                    <span class="book-symbol">📘</span>
-                    <strong>English</strong>
-                    <small>Add English PDF</small>
 
-                    <input
-                        type="file"
-                        accept=".pdf"
-                        data-book-grade="6"
-                        data-book-subject="English"
-                        hidden
-                    >
+        notesForm.addEventListener("submit", async (event) => {
 
-                </label>
+            event.preventDefault();
 
-            </div>
 
-        </div>
+            const topic =
+                document.getElementById("topic").value.trim();
 
+            const level =
+                document.getElementById("level").value;
 
-        <!-- GRADE 7 -->
+            const length =
+                document.getElementById("length").value;
 
-        <div class="book-grade" id="booksGrade7">
+            const includeMCQ =
+                document.getElementById("includeMCQ").checked;
 
-            <div class="book-grade-header">
-                <h3>Grade 7</h3>
-                <span>School Books</span>
-            </div>
+            const includeFlashcards =
+                document.getElementById("includeFlashcards").checked;
 
-            <div class="book-grid">
 
-                <label class="book-card">
-                    <span class="book-symbol">➗</span>
-                    <strong>Mathematics</strong>
-                    <small>Add Mathematics PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="7" data-book-subject="Mathematics" hidden>
-                </label>
+            const pdf =
+                pdfFile.files.length > 0
+                    ? pdfFile.files[0]
+                    : null;
 
-                <label class="book-card">
-                    <span class="book-symbol">🔬</span>
-                    <strong>Science</strong>
-                    <small>Add Science PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="7" data-book-subject="Science" hidden>
-                </label>
 
-                <label class="book-card">
-                    <span class="book-symbol">🌍</span>
-                    <strong>Social Science</strong>
-                    <small>Add Social Science PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="7" data-book-subject="Social Science" hidden>
-                </label>
+            if (!topic && !pdf) {
 
-                <label class="book-card">
-                    <span class="book-symbol">📘</span>
-                    <strong>English</strong>
-                    <small>Add English PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="7" data-book-subject="English" hidden>
-                </label>
+                alert("Please enter a topic or upload a PDF.");
 
-            </div>
+                return;
 
-        </div>
+            }
 
 
-        <!-- GRADE 8 -->
+            // Loading state
 
-        <div class="book-grade" id="booksGrade8">
+            generateBtn.disabled = true;
 
-            <div class="book-grade-header">
-                <h3>Grade 8</h3>
-                <span>School Books</span>
-            </div>
+            generateIcon.textContent = "⏳";
 
-            <div class="book-grid">
+            generateText.textContent = "Generating...";
 
-                <label class="book-card">
-                    <span class="book-symbol">➗</span>
-                    <strong>Mathematics</strong>
-                    <small>Add Mathematics PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="8" data-book-subject="Mathematics" hidden>
-                </label>
 
-                <label class="book-card">
-                    <span class="book-symbol">🔬</span>
-                    <strong>Science</strong>
-                    <small>Add Science PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="8" data-book-subject="Science" hidden>
-                </label>
+            resultSection.classList.remove("active");
 
-                <label class="book-card">
-                    <span class="book-symbol">🌍</span>
-                    <strong>Social Science</strong>
-                    <small>Add Social Science PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="8" data-book-subject="Social Science" hidden>
-                </label>
+            notesOutput.innerHTML = "";
 
-                <label class="book-card">
-                    <span class="book-symbol">📘</span>
-                    <strong>English</strong>
-                    <small>Add English PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="8" data-book-subject="English" hidden>
-                </label>
 
-            </div>
+            try {
 
-        </div>
+                const formData = new FormData();
 
 
-        <!-- GRADE 9 -->
+                formData.append("topic", topic);
+                formData.append("level", level);
+                formData.append("length", length);
+                formData.append("includeMCQ", includeMCQ);
+                formData.append(
+                    "includeFlashcards",
+                    includeFlashcards
+                );
 
-        <div class="book-grade" id="booksGrade9">
 
-            <div class="book-grade-header">
-                <h3>Grade 9</h3>
-                <span>School Books</span>
-            </div>
+                if (pdf) {
+                    formData.append("pdf", pdf);
+                }
 
-            <div class="book-grid">
 
-                <label class="book-card">
-                    <span class="book-symbol">➗</span>
-                    <strong>Mathematics</strong>
-                    <small>Add Mathematics PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="9" data-book-subject="Mathematics" hidden>
-                </label>
+                const response =
+                    await fetch("/api/generate", {
+                        method: "POST",
+                        body: formData
+                    });
 
-                <label class="book-card">
-                    <span class="book-symbol">🔬</span>
-                    <strong>Science</strong>
-                    <small>Add Science PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="9" data-book-subject="Science" hidden>
-                </label>
 
-                <label class="book-card">
-                    <span class="book-symbol">🌍</span>
-                    <strong>Social Science</strong>
-                    <small>Add Social Science PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="9" data-book-subject="Social Science" hidden>
-                </label>
+                const data =
+                    await response.json();
 
-                <label class="book-card">
-                    <span class="book-symbol">📘</span>
-                    <strong>English</strong>
-                    <small>Add English PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="9" data-book-subject="English" hidden>
-                </label>
 
-            </div>
+                if (!response.ok || !data.success) {
 
-        </div>
+                    throw new Error(
+                        data.error ||
+                        "Failed to generate notes."
+                    );
 
+                }
 
-        <!-- GRADE 10 -->
 
-        <div class="book-grade" id="booksGrade10">
+                // Render Markdown
 
-            <div class="book-grade-header">
-                <h3>Grade 10</h3>
-                <span>School Books</span>
-            </div>
+                if (typeof marked !== "undefined") {
 
-            <div class="book-grid">
+                    notesOutput.innerHTML =
+                        marked.parse(data.notes || "");
 
-                <label class="book-card">
-                    <span class="book-symbol">➗</span>
-                    <strong>Mathematics</strong>
-                    <small>Add Mathematics PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="10" data-book-subject="Mathematics" hidden>
-                </label>
+                } else {
 
-                <label class="book-card">
-                    <span class="book-symbol">🔬</span>
-                    <strong>Science</strong>
-                    <small>Add Science PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="10" data-book-subject="Science" hidden>
-                </label>
+                    notesOutput.textContent =
+                        data.notes || "";
 
-                <label class="book-card">
-                    <span class="book-symbol">🌍</span>
-                    <strong>Social Science</strong>
-                    <small>Add Social Science PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="10" data-book-subject="Social Science" hidden>
-                </label>
+                }
 
-                <label class="book-card">
-                    <span class="book-symbol">📘</span>
-                    <strong>English</strong>
-                    <small>Add English PDF</small>
-                    <input type="file" accept=".pdf" data-book-grade="10" data-book-subject="English" hidden>
-                </label>
 
-            </div>
+                resultSection.classList.add("active");
 
-        </div>
 
+                // Scroll to result
 
-        <div class="book-note">
-            <strong>Coming next:</strong>
-            These book slots are currently for organizing your PDFs.
-            We can connect them to the AI so Learn and Generate Notes can
-            automatically use the selected book and chapter.
-        </div>
+                setTimeout(() => {
 
-    </section>
+                    resultSection.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
 
+                }, 100);
 
 
-    <!-- ========================= -->
-    <!-- YOUR NOTES PAGE -->
-    <!-- ========================= -->
+            }
 
-    <section id="yourNotesPage" class="page">
+            catch (error) {
 
-        <div class="page-heading">
+                console.error(error);
 
-            <div class="page-icon">📖</div>
+                alert(
+                    error.message ||
+                    "Something went wrong while generating notes."
+                );
 
-            <div>
-                <h2>Your Notes</h2>
-                <p>
-                    Your saved study material in one place.
-                </p>
-            </div>
+            }
 
-        </div>
+            finally {
 
+                generateBtn.disabled = false;
 
-        <div class="notes-toolbar">
+                generateIcon.textContent = "✨";
 
-            <input
-                id="notesSearch"
-                type="search"
-                placeholder="Search your notes..."
-            >
+                generateText.textContent =
+                    "Generate Notes";
 
-            <select id="notesSort">
+            }
 
-                <option value="newest">Newest first</option>
-                <option value="oldest">Oldest first</option>
-                <option value="az">A → Z</option>
+        });
 
-            </select>
 
-        </div>
 
+        // ================================
+        // COPY BUTTON
+        // ================================
 
-        <div id="savedNotes" class="saved-notes-grid"></div>
+        const copyBtn =
+            document.getElementById("copyBtn");
 
 
-        <div id="emptyNotes" class="empty-state">
+        copyBtn.addEventListener("click", async () => {
 
-            <div class="empty-icon">📚</div>
+            const text =
+                notesOutput.innerText;
 
-            <h3>No saved notes yet</h3>
 
-            <p>
-                Generate some notes and save them here for quick access.
-            </p>
+            if (!text) return;
 
-            <button id="startCreatingButton" class="secondary-button">
-                Create Notes
-            </button>
 
-        </div>
+            try {
 
-    </section>
+                await navigator.clipboard.writeText(text);
 
+                copyBtn.textContent = "✅ Copied!";
 
 
-    <!-- ========================= -->
-    <!-- SEPARATE READING PAGE -->
-    <!-- ========================= -->
+                setTimeout(() => {
 
-    <section id="readingPage" class="reading-page">
+                    copyBtn.textContent = "📋 Copy";
 
-        <div class="reading-toolbar">
+                }, 1500);
 
-            <button id="backToNotesButton" class="back-button">
-                ← Back to Your Notes
-            </button>
+            }
 
-            <div class="reading-actions">
+            catch (error) {
 
-                <button id="readingSaveButton" class="small-button">
-                    💾 Save
-                </button>
+                console.error(error);
 
-                <button id="readingDownloadButton" class="small-button">
-                    ↓ Download PDF
-                </button>
+                alert("Could not copy the notes.");
 
-            </div>
+            }
 
-        </div>
+        });
 
 
-        <article class="reading-paper">
 
-            <div class="reading-paper-header">
+        // ================================
+        // DOWNLOAD BUTTON
+        // ================================
 
-                <span>AI NOTES • STUDY MATERIAL</span>
+        const downloadBtn =
+            document.getElementById("downloadBtn");
 
-                <h1 id="readingTitle">
-                    Study Notes
-                </h1>
 
-            </div>
+        downloadBtn.addEventListener("click", () => {
 
+            const text =
+                notesOutput.innerText;
 
-            <div id="readingContent" class="textbook-content"></div>
 
-        </article>
+            if (!text) return;
 
-    </section>
 
-</main>
+            const blob =
+                new Blob(
+                    [text],
+                    { type: "text/plain" }
+                );
 
 
-<script src="app.js"></script>
+            const url =
+                URL.createObjectURL(blob);
+
+
+            const a =
+                document.createElement("a");
+
+
+            a.href = url;
+
+            a.download = "study-notes.txt";
+
+            a.click();
+
+
+            URL.revokeObjectURL(url);
+
+        });
+
+    </script>
 
 </body>
 </html>
