@@ -8,12 +8,12 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
         mermaid.initialize({
             startOnLoad: false,
@@ -26,63 +26,72 @@
             tex: {
                 inlineMath: [['$', '$'], ['\\(', '\\)']],
                 displayMath: [['$$', '$$'], ['\\[', '\\]']]
-            },
-            svg: {
-                fontCache: 'global'
             }
         };
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 
 <body>
 
 <header class="top-header">
-    <div class="header-inner">
 
-        <div class="brand" onclick="showPage('generatePage')">
-            <div class="brand-icon">🌿</div>
-            <div>
-                <div class="brand-name">AI Notes</div>
-                <div class="brand-subtitle">Smart Study Assistant</div>
-            </div>
+    <div class="brand">
+        <div class="brand-icon">✦</div>
+        <div>
+            <h1>AI Notes</h1>
+            <span>Smart Study Assistant</span>
         </div>
-
-        <nav class="main-nav">
-            <button id="generateTab" class="nav-button active">
-                ✨ Generate Notes
-            </button>
-
-            <button id="yourNotesTab" class="nav-button">
-                📚 Your Notes
-            </button>
-
-            <button id="themeButton" class="theme-button" title="Change theme">
-                🌙
-            </button>
-        </nav>
-
     </div>
+
+    <nav class="main-nav">
+
+        <button class="nav-button active" id="generateTab">
+            ✨ Generate Notes
+        </button>
+
+        <button class="nav-button" id="learnTab">
+            🧠 Learn
+        </button>
+
+        <button class="nav-button" id="booksTab">
+            📚 Books
+        </button>
+
+        <button class="nav-button" id="yourNotesTab">
+            📖 Your Notes
+        </button>
+
+        <button class="theme-button" id="themeButton">
+            ☾
+        </button>
+
+    </nav>
+
 </header>
 
 
-<main class="app-container">
+<main class="main-container">
 
-    <!-- ================= GENERATE PAGE ================= -->
+
+    <!-- ========================= -->
+    <!-- GENERATE NOTES PAGE -->
+    <!-- ========================= -->
 
     <section id="generatePage" class="page active-page">
 
         <div class="hero-section">
 
             <div class="hero-badge">
-                🌱 AI-powered study assistant
+                ✨ AI-Powered Learning
             </div>
 
-            <h1>Create beautiful study notes</h1>
+            <h2>Create beautiful study notes</h2>
 
             <p>
-                Turn any topic or PDF into clear, organized and exam-ready notes.
+                Turn any topic or textbook into clear, organized and
+                exam-friendly study material.
             </p>
 
         </div>
@@ -90,32 +99,26 @@
 
         <div class="generator-card">
 
-            <div class="input-section">
+            <label class="section-label">
+                What do you want to study?
+            </label>
 
-                <label for="topic">
-                    📚 What do you want to study?
-                </label>
-
-                <textarea
-                    id="topic"
-                    placeholder="Enter a topic, chapter or question..."
-                    rows="5"
-                ></textarea>
-
-            </div>
+            <textarea
+                id="topic"
+                class="topic-input"
+                placeholder="Enter a topic, chapter or question..."
+            ></textarea>
 
 
-            <div class="upload-section">
+            <div class="upload-area">
 
-                <label class="upload-box" for="pdfFile">
+                <label for="pdfFile" class="upload-box">
 
-                    <div class="upload-icon">
-                        📄
-                    </div>
+                    <div class="upload-icon">📄</div>
 
                     <div>
                         <strong>Upload a PDF</strong>
-                        <span>
+                        <span id="fileName">
                             Use a textbook, chapter or study material
                         </span>
                     </div>
@@ -124,11 +127,10 @@
                         type="file"
                         id="pdfFile"
                         accept=".pdf"
+                        hidden
                     >
 
                 </label>
-
-                <div id="fileName" class="file-name"></div>
 
             </div>
 
@@ -137,14 +139,14 @@
 
                 <div class="option-group">
 
-                    <label for="level">
-                        🎓 Student level
-                    </label>
+                    <label>Grade / Level</label>
 
                     <select id="level">
-                        <option value="Class 6-8">Class 6–8</option>
-                        <option value="Class 9-10" selected>Class 9–10</option>
-                        <option value="Class 11-12">Class 11–12</option>
+                        <option value="Grade 6">Grade 6</option>
+                        <option value="Grade 7">Grade 7</option>
+                        <option value="Grade 8">Grade 8</option>
+                        <option value="Grade 9" selected>Grade 9</option>
+                        <option value="Grade 10">Grade 10</option>
                         <option value="College">College</option>
                         <option value="General">General</option>
                     </select>
@@ -154,14 +156,12 @@
 
                 <div class="option-group">
 
-                    <label for="length">
-                        📏 Note length
-                    </label>
+                    <label>Note length</label>
 
                     <select id="length">
-                        <option value="Short">Short</option>
-                        <option value="Medium" selected>Medium</option>
-                        <option value="Detailed">Detailed</option>
+                        <option value="short">Short</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="detailed">Detailed</option>
                     </select>
 
                 </div>
@@ -173,21 +173,12 @@
 
                 <label class="check-option">
                     <input type="checkbox" id="mcq">
-                    <span class="checkmark"></span>
-                    <span>
-                        <strong>MCQs</strong>
-                        <small>Practice questions</small>
-                    </span>
+                    <span>Generate MCQs</span>
                 </label>
-
 
                 <label class="check-option">
                     <input type="checkbox" id="flashcards">
-                    <span class="checkmark"></span>
-                    <span>
-                        <strong>Flashcards</strong>
-                        <small>Quick revision</small>
-                    </span>
+                    <span>Create Flashcards</span>
                 </label>
 
             </div>
@@ -196,7 +187,6 @@
             <button id="generateButton" class="generate-button">
                 ✨ Generate Notes
             </button>
-
 
             <p class="patience-message">
                 *Notes may take some time to generate. Please keep some patience.
@@ -215,46 +205,567 @@
         </div>
 
 
-        <!-- Generation completed message -->
+        <section id="resultCard" class="result-card">
 
-        <div id="resultCard" class="result-card">
+            <div class="result-header">
 
-            <div class="success-icon">
-                ✓
+                <div>
+                    <span class="result-label">GENERATED MATERIAL</span>
+                    <h3 id="resultTitle">Your Study Notes</h3>
+                </div>
+
+                <div class="result-actions">
+
+                    <button id="saveButton" class="small-button">
+                        💾 Save
+                    </button>
+
+                    <button id="copyButton" class="small-button">
+                        📋 Copy
+                    </button>
+
+                    <button id="downloadButton" class="small-button">
+                        ↓ PDF
+                    </button>
+
+                </div>
+
             </div>
 
+
+            <div id="notes" class="notes-content"></div>
+
+        </section>
+
+    </section>
+
+
+
+    <!-- ========================= -->
+    <!-- LEARN PAGE -->
+    <!-- ========================= -->
+
+    <section id="learnPage" class="page">
+
+        <div class="page-heading">
+
+            <div class="page-icon">🧠</div>
+
             <div>
-                <h3>Notes created successfully</h3>
+                <h2>Learn</h2>
                 <p>
-                    Your notes are ready. Open Your Notes to manage them.
+                    Understand any topic with an AI-powered learning mode.
                 </p>
             </div>
 
-            <button id="viewNotesButton" class="secondary-button">
-                📚 Your Notes
+        </div>
+
+
+        <div class="learn-card">
+
+            <div class="learn-intro">
+                <span>SMART LEARNING</span>
+                <h3>How would you like to learn?</h3>
+                <p>
+                    Choose a grade, enter a topic and select a learning mode.
+                    The result is designed to fit on one page.
+                </p>
+            </div>
+
+
+            <div class="learn-form">
+
+                <div class="option-group">
+
+                    <label>Grade</label>
+
+                    <select id="learnGrade">
+
+                        <option value="Grade 6">Grade 6</option>
+                        <option value="Grade 7">Grade 7</option>
+                        <option value="Grade 8">Grade 8</option>
+                        <option value="Grade 9" selected>Grade 9</option>
+                        <option value="Grade 10">Grade 10</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="option-group">
+
+                    <label>Topic / Chapter</label>
+
+                    <input
+                        id="learnTopic"
+                        type="text"
+                        placeholder="Example: Motion, Democracy, Algebra..."
+                    >
+
+                </div>
+
+            </div>
+
+
+            <label class="section-label">
+                Choose your learning mode
+            </label>
+
+
+            <div class="learning-modes">
+
+                <button
+                    class="learning-mode selected"
+                    data-mode="teach"
+                    id="teachMode"
+                >
+
+                    <div class="mode-icon">👨‍🏫</div>
+
+                    <div>
+                        <strong>Teach Me</strong>
+                        <span>
+                            Learn the topic in a simple teacher-style explanation.
+                        </span>
+                    </div>
+
+                </button>
+
+
+                <button
+                    class="learning-mode"
+                    data-mode="revision"
+                    id="revisionMode"
+                >
+
+                    <div class="mode-icon">⚡</div>
+
+                    <div>
+                        <strong>Quick Revision Sheet</strong>
+                        <span>
+                            Get the most important points for fast revision.
+                        </span>
+                    </div>
+
+                </button>
+
+
+                <button
+                    class="learning-mode"
+                    data-mode="concept"
+                    id="conceptMode"
+                >
+
+                    <div class="mode-icon">🗺️</div>
+
+                    <div>
+                        <strong>Concept Map</strong>
+                        <span>
+                            See the topic as a connected visual structure.
+                        </span>
+                    </div>
+
+                </button>
+
+            </div>
+
+
+            <button id="generateLearnButton" class="generate-button learn-generate">
+                🧠 Start Learning
             </button>
 
+
+            <div id="learnLoading" class="loading">
+
+                <div class="loading-spinner"></div>
+
+                <span>Creating learning material...</span>
+
+            </div>
+
+        </div>
+
+
+        <section id="learnResult" class="learn-result">
+
+            <div class="result-header">
+
+                <div>
+                    <span class="result-label">ONE-PAGE LEARNING</span>
+                    <h3 id="learnResultTitle">Learning Material</h3>
+                </div>
+
+                <div class="result-actions">
+
+                    <button id="saveLearnButton" class="small-button">
+                        💾 Save
+                    </button>
+
+                    <button id="downloadLearnButton" class="small-button">
+                        ↓ PDF
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div id="learnContent" class="textbook-content"></div>
+
+        </section>
+
+    </section>
+
+
+
+    <!-- ========================= -->
+    <!-- BOOKS PAGE -->
+    <!-- ========================= -->
+
+    <section id="booksPage" class="page">
+
+        <div class="page-heading">
+
+            <div class="page-icon">📚</div>
+
+            <div>
+                <h2>Books</h2>
+
+                <p>
+                    Organize your study books by grade and subject.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="books-info">
+
+            <div class="books-info-icon">📖</div>
+
+            <div>
+
+                <strong>NCERT Library</strong>
+
+                <p>
+                    Add your authorized NCERT study PDFs to the appropriate
+                    grade and subject.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="grade-tabs">
+
+            <button class="grade-tab active" data-grade="6">
+                Grade 6
+            </button>
+
+            <button class="grade-tab" data-grade="7">
+                Grade 7
+            </button>
+
+            <button class="grade-tab" data-grade="8">
+                Grade 8
+            </button>
+
+            <button class="grade-tab" data-grade="9">
+                Grade 9
+            </button>
+
+            <button class="grade-tab" data-grade="10">
+                Grade 10
+            </button>
+
+        </div>
+
+
+        <!-- GRADE 6 -->
+
+        <div class="book-grade active" id="booksGrade6">
+
+            <div class="book-grade-header">
+                <h3>Grade 6</h3>
+                <span>School Books</span>
+            </div>
+
+            <div class="book-grid">
+
+                <label class="book-card">
+
+                    <span class="book-symbol">➗</span>
+                    <strong>Mathematics</strong>
+                    <small>Add Mathematics PDF</small>
+
+                    <input
+                        type="file"
+                        accept=".pdf"
+                        data-book-grade="6"
+                        data-book-subject="Mathematics"
+                        hidden
+                    >
+
+                </label>
+
+
+                <label class="book-card">
+
+                    <span class="book-symbol">🔬</span>
+                    <strong>Science</strong>
+                    <small>Add Science PDF</small>
+
+                    <input
+                        type="file"
+                        accept=".pdf"
+                        data-book-grade="6"
+                        data-book-subject="Science"
+                        hidden
+                    >
+
+                </label>
+
+
+                <label class="book-card">
+
+                    <span class="book-symbol">🌍</span>
+                    <strong>Social Science</strong>
+                    <small>Add Social Science PDF</small>
+
+                    <input
+                        type="file"
+                        accept=".pdf"
+                        data-book-grade="6"
+                        data-book-subject="Social Science"
+                        hidden
+                    >
+
+                </label>
+
+
+                <label class="book-card">
+
+                    <span class="book-symbol">📘</span>
+                    <strong>English</strong>
+                    <small>Add English PDF</small>
+
+                    <input
+                        type="file"
+                        accept=".pdf"
+                        data-book-grade="6"
+                        data-book-subject="English"
+                        hidden
+                    >
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- GRADE 7 -->
+
+        <div class="book-grade" id="booksGrade7">
+
+            <div class="book-grade-header">
+                <h3>Grade 7</h3>
+                <span>School Books</span>
+            </div>
+
+            <div class="book-grid">
+
+                <label class="book-card">
+                    <span class="book-symbol">➗</span>
+                    <strong>Mathematics</strong>
+                    <small>Add Mathematics PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="7" data-book-subject="Mathematics" hidden>
+                </label>
+
+                <label class="book-card">
+                    <span class="book-symbol">🔬</span>
+                    <strong>Science</strong>
+                    <small>Add Science PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="7" data-book-subject="Science" hidden>
+                </label>
+
+                <label class="book-card">
+                    <span class="book-symbol">🌍</span>
+                    <strong>Social Science</strong>
+                    <small>Add Social Science PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="7" data-book-subject="Social Science" hidden>
+                </label>
+
+                <label class="book-card">
+                    <span class="book-symbol">📘</span>
+                    <strong>English</strong>
+                    <small>Add English PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="7" data-book-subject="English" hidden>
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- GRADE 8 -->
+
+        <div class="book-grade" id="booksGrade8">
+
+            <div class="book-grade-header">
+                <h3>Grade 8</h3>
+                <span>School Books</span>
+            </div>
+
+            <div class="book-grid">
+
+                <label class="book-card">
+                    <span class="book-symbol">➗</span>
+                    <strong>Mathematics</strong>
+                    <small>Add Mathematics PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="8" data-book-subject="Mathematics" hidden>
+                </label>
+
+                <label class="book-card">
+                    <span class="book-symbol">🔬</span>
+                    <strong>Science</strong>
+                    <small>Add Science PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="8" data-book-subject="Science" hidden>
+                </label>
+
+                <label class="book-card">
+                    <span class="book-symbol">🌍</span>
+                    <strong>Social Science</strong>
+                    <small>Add Social Science PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="8" data-book-subject="Social Science" hidden>
+                </label>
+
+                <label class="book-card">
+                    <span class="book-symbol">📘</span>
+                    <strong>English</strong>
+                    <small>Add English PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="8" data-book-subject="English" hidden>
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- GRADE 9 -->
+
+        <div class="book-grade" id="booksGrade9">
+
+            <div class="book-grade-header">
+                <h3>Grade 9</h3>
+                <span>School Books</span>
+            </div>
+
+            <div class="book-grid">
+
+                <label class="book-card">
+                    <span class="book-symbol">➗</span>
+                    <strong>Mathematics</strong>
+                    <small>Add Mathematics PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="9" data-book-subject="Mathematics" hidden>
+                </label>
+
+                <label class="book-card">
+                    <span class="book-symbol">🔬</span>
+                    <strong>Science</strong>
+                    <small>Add Science PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="9" data-book-subject="Science" hidden>
+                </label>
+
+                <label class="book-card">
+                    <span class="book-symbol">🌍</span>
+                    <strong>Social Science</strong>
+                    <small>Add Social Science PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="9" data-book-subject="Social Science" hidden>
+                </label>
+
+                <label class="book-card">
+                    <span class="book-symbol">📘</span>
+                    <strong>English</strong>
+                    <small>Add English PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="9" data-book-subject="English" hidden>
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- GRADE 10 -->
+
+        <div class="book-grade" id="booksGrade10">
+
+            <div class="book-grade-header">
+                <h3>Grade 10</h3>
+                <span>School Books</span>
+            </div>
+
+            <div class="book-grid">
+
+                <label class="book-card">
+                    <span class="book-symbol">➗</span>
+                    <strong>Mathematics</strong>
+                    <small>Add Mathematics PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="10" data-book-subject="Mathematics" hidden>
+                </label>
+
+                <label class="book-card">
+                    <span class="book-symbol">🔬</span>
+                    <strong>Science</strong>
+                    <small>Add Science PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="10" data-book-subject="Science" hidden>
+                </label>
+
+                <label class="book-card">
+                    <span class="book-symbol">🌍</span>
+                    <strong>Social Science</strong>
+                    <small>Add Social Science PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="10" data-book-subject="Social Science" hidden>
+                </label>
+
+                <label class="book-card">
+                    <span class="book-symbol">📘</span>
+                    <strong>English</strong>
+                    <small>Add English PDF</small>
+                    <input type="file" accept=".pdf" data-book-grade="10" data-book-subject="English" hidden>
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <div class="book-note">
+            <strong>Coming next:</strong>
+            These book slots are currently for organizing your PDFs.
+            We can connect them to the AI so Learn and Generate Notes can
+            automatically use the selected book and chapter.
         </div>
 
     </section>
 
 
 
-    <!-- ================= YOUR NOTES PAGE ================= -->
+    <!-- ========================= -->
+    <!-- YOUR NOTES PAGE -->
+    <!-- ========================= -->
 
     <section id="yourNotesPage" class="page">
 
         <div class="page-heading">
 
+            <div class="page-icon">📖</div>
+
             <div>
-                <div class="small-heading">
-                    📚 Your Library
-                </div>
-
-                <h1>Your Notes</h1>
-
+                <h2>Your Notes</h2>
                 <p>
-                    Your saved notes are stored here for quick access.
+                    Your saved study material in one place.
                 </p>
             </div>
 
@@ -263,23 +774,18 @@
 
         <div class="notes-toolbar">
 
-            <div class="search-box">
-
-                <span>🔍</span>
-
-                <input
-                    type="text"
-                    id="notesSearch"
-                    placeholder="Search your notes..."
-                >
-
-            </div>
-
+            <input
+                id="notesSearch"
+                type="search"
+                placeholder="Search your notes..."
+            >
 
             <select id="notesSort">
+
                 <option value="newest">Newest first</option>
                 <option value="oldest">Oldest first</option>
-                <option value="az">A–Z</option>
+                <option value="az">A → Z</option>
+
             </select>
 
         </div>
@@ -288,23 +794,18 @@
         <div id="savedNotes" class="saved-notes-grid"></div>
 
 
-        <div id="emptyNotes" class="empty-notes">
+        <div id="emptyNotes" class="empty-state">
 
-            <div class="empty-icon">
-                📖
-            </div>
+            <div class="empty-icon">📚</div>
 
-            <h2>No saved notes yet</h2>
+            <h3>No saved notes yet</h3>
 
             <p>
-                Generate your first notes and save them here.
+                Generate some notes and save them here for quick access.
             </p>
 
-            <button
-                id="startCreatingButton"
-                class="secondary-button"
-            >
-                ✨ Start Creating
+            <button id="startCreatingButton" class="secondary-button">
+                Create Notes
             </button>
 
         </div>
@@ -313,34 +814,26 @@
 
 
 
-    <!-- ================= READING PAGE ================= -->
+    <!-- ========================= -->
+    <!-- SEPARATE READING PAGE -->
+    <!-- ========================= -->
 
     <section id="readingPage" class="reading-page">
 
         <div class="reading-toolbar">
 
-            <button
-                id="backToNotes"
-                class="back-button"
-            >
+            <button id="backToNotesButton" class="back-button">
                 ← Back to Your Notes
             </button>
 
-
             <div class="reading-actions">
 
-                <button
-                    id="readingSaveButton"
-                    class="reading-button"
-                >
+                <button id="readingSaveButton" class="small-button">
                     💾 Save
                 </button>
 
-                <button
-                    id="readingDownloadButton"
-                    class="reading-button"
-                >
-                    📄 Download PDF
+                <button id="readingDownloadButton" class="small-button">
+                    ↓ Download PDF
                 </button>
 
             </div>
@@ -348,7 +841,22 @@
         </div>
 
 
-        <article id="readingContent" class="textbook-page"></article>
+        <article class="reading-paper">
+
+            <div class="reading-paper-header">
+
+                <span>AI NOTES • STUDY MATERIAL</span>
+
+                <h1 id="readingTitle">
+                    Study Notes
+                </h1>
+
+            </div>
+
+
+            <div id="readingContent" class="textbook-content"></div>
+
+        </article>
 
     </section>
 
