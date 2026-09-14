@@ -1,4 +1,4 @@
-const topicInput = document.getElementById("topic");
+const topic = document.getElementById("topic");
 const pdfFile = document.getElementById("pdfFile");
 const fileName = document.getElementById("fileName");
 
@@ -12,29 +12,50 @@ const generateButton = document.getElementById("generateButton");
 const loading = document.getElementById("loading");
 
 const resultCard = document.getElementById("resultCard");
-const notes = document.getElementById("notes");
-
-const copyButton = document.getElementById("copyButton");
-const downloadButton = document.getElementById("downloadButton");
-const saveButton = document.getElementById("saveButton");
+const viewNotesButton = document.getElementById("viewNotesButton");
 
 const generateTab = document.getElementById("generateTab");
 const yourNotesTab = document.getElementById("yourNotesTab");
-
-const generatorPage = document.getElementById("generatorPage");
-const yourNotesPage = document.getElementById("yourNotesPage");
-
-const savedNotesContainer = document.getElementById("savedNotes");
-const startCreatingButton = document.getElementById("startCreatingButton");
-
 const themeButton = document.getElementById("themeButton");
 
+const generatePage = document.getElementById("generatePage");
+const yourNotesPage = document.getElementById("yourNotesPage");
 
-/* =========================
-   MERMAID
-========================= */
+const savedNotes = document.getElementById("savedNotes");
+const emptyNotes = document.getElementById("emptyNotes");
 
-if (window.mermaid) {
+const startCreatingButton =
+    document.getElementById("startCreatingButton");
+
+const notesSearch =
+    document.getElementById("notesSearch");
+
+const notesSort =
+    document.getElementById("notesSort");
+
+const readingPage =
+    document.getElementById("readingPage");
+
+const readingContent =
+    document.getElementById("readingContent");
+
+const backToNotes =
+    document.getElementById("backToNotes");
+
+const readingSaveButton =
+    document.getElementById("readingSaveButton");
+
+const readingDownloadButton =
+    document.getElementById("readingDownloadButton");
+
+
+let currentNote = null;
+let currentlyReadingNote = null;
+
+
+/* ================= MERMAID ================= */
+
+if (typeof mermaid !== "undefined") {
     mermaid.initialize({
         startOnLoad: false,
         securityLevel: "loose"
@@ -42,34 +63,27 @@ if (window.mermaid) {
 }
 
 
-/* =========================
-   PDF NAME
-========================= */
+/* ================= FILE NAME ================= */
 
 pdfFile.addEventListener("change", () => {
 
     if (pdfFile.files.length > 0) {
-        fileName.textContent = pdfFile.files[0].name;
+        fileName.textContent =
+            `Selected: ${pdfFile.files[0].name}`;
     } else {
-        fileName.textContent = "No file selected";
+        fileName.textContent = "";
     }
 
 });
 
 
-/* =========================
-   MARKDOWN → HTML
-========================= */
-
-function escapeHtml(text) {
-    return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-}
-
+/* ================= MARKDOWN ================= */
 
 function markdownToHtml(markdown) {
+
+    if (!markdown) {
+        return "";
+    }
 
     let text = markdown;
 
@@ -93,268 +107,183 @@ function markdownToHtml(markdown) {
 
 
     /*
-       Protect code blocks
+       Use marked if available
     */
 
-    const codeBlocks = [];
+    let html;
 
-    text = text.replace(
-        /```([\s\S]*?)```/g,
-        function (_, code) {
+    if (typeof marked !== "undefined") {
 
-            const index = codeBlocks.length;
+        html = marked.parse(text, {
+            breaks: true
+        });
 
-            codeBlocks.push(code.trim());
+    } else {
 
-            return `@@CODE_${index}@@`;
-        }
-    );
+        html = text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\n/g, "<br>");
 
-
-    text = escapeHtml(text);
-
-
-    /*
-       Headings
-    */
-
-    text = text.replace(
-        /^### (.*)$/gm,
-        "<h3>$1</h3>"
-    );
-
-    text = text.replace(
-        /^## (.*)$/gm,
-        "<h2>$1</h2>"
-    );
-
-    text = text.replace(
-        /^# (.*)$/gm,
-        "<h1>$1</h1>"
-    );
-
-
-    /*
-       Bold
-    */
-
-    text = text.replace(
-        /\*\*(.*?)\*\*/g,
-        "<strong>$1</strong>"
-    );
-
-
-    /*
-       Bullet lists
-    */
-
-    text = text.replace(
-        /^\s*[-*] (.*)$/gm,
-        "<li>$1</li>"
-    );
-
-    text = text.replace(
-        /(<li>.*<\/li>\n?)+/g,
-        function (match) {
-            return `<ul>${match}</ul>`;
-        }
-    );
-
-
-    /*
-       Numbered lists
-    */
-
-    text = text.replace(
-        /^\s*\d+\.\s+(.*)$/gm,
-        "<li>$1</li>"
-    );
-
-
-    /*
-       Paragraphs
-    */
-
-    const lines = text.split("\n");
-
-    let html = "";
-
-    for (const line of lines) {
-
-        const trimmed = line.trim();
-
-        if (!trimmed) {
-            continue;
-        }
-
-        if (
-            trimmed.startsWith("<h1>") ||
-            trimmed.startsWith("<h2>") ||
-            trimmed.startsWith("<h3>") ||
-            trimmed.startsWith("<ul>") ||
-            trimmed.startsWith("<li>") ||
-            trimmed.startsWith("@@")
-        ) {
-            html += trimmed;
-        } else {
-            html += `<p>${trimmed}</p>`;
-        }
     }
 
 
     /*
-       Code blocks
+       Restore Mermaid blocks
     */
 
-    codeBlocks.forEach((code, index) => {
+    html = html.replace(
+        /@@MERMAID_(\d+)@@/g,
+        function (_, index) {
 
-        html = html.replace(
-            `@@CODE_${index}@@`,
-            `<pre><code>${escapeHtml(code)}</code></pre>`
-        );
+            return `
+                <div class="mermaid">
+                    ${escapeHtml(mermaidBlocks[index])}
+                </div>
+            `;
 
-    });
-
-
-    /*
-       Mermaid blocks
-    */
-
-    mermaidBlocks.forEach((code, index) => {
-
-        html = html.replace(
-            `@@MERMAID_${index}@@`,
-            `<div class="mermaid">${code}</div>`
-        );
-
-    });
+        }
+    );
 
 
     return html;
 }
 
 
-/* =========================
-   GENERATE NOTES
-========================= */
+/* ================= ESCAPE ================= */
+
+function escapeHtml(text) {
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* ================= GENERATE ================= */
 
 generateButton.addEventListener("click", async () => {
 
-    const topic = topicInput.value.trim();
+    const topicValue = topic.value.trim();
 
-    if (!topic && !pdfFile.files.length) {
+    if (!topicValue && !pdfFile.files.length) {
 
-        alert("Please enter a topic or upload a PDF.");
+        alert(
+            "Please enter a topic or upload a PDF first."
+        );
 
         return;
     }
 
 
-    const formData = new FormData();
-
-    formData.append("topic", topic);
-    formData.append("level", level.value);
-    formData.append("length", length.value);
-    formData.append("mcq", mcq.checked);
-    formData.append("flashcards", flashcards.checked);
-
-
-    if (pdfFile.files.length > 0) {
-        formData.append("pdf", pdfFile.files[0]);
-    }
-
-
     generateButton.disabled = true;
-    loading.style.display = "flex";
 
-    resultCard.style.display = "none";
+    loading.classList.add("show");
+
+    resultCard.classList.remove("show");
 
 
     try {
 
-        const response = await fetch("/api/generate", {
-            method: "POST",
-            body: formData
-        });
+        const formData = new FormData();
+
+        formData.append("topic", topicValue);
+        formData.append("level", level.value);
+        formData.append("length", length.value);
+
+        formData.append(
+            "mcq",
+            mcq.checked ? "true" : "false"
+        );
+
+        formData.append(
+            "flashcards",
+            flashcards.checked ? "true" : "false"
+        );
+
+
+        if (pdfFile.files.length > 0) {
+
+            formData.append(
+                "pdf",
+                pdfFile.files[0]
+            );
+
+        }
+
+
+        const response = await fetch(
+            "/api/generate",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
 
 
         const data = await response.json();
 
 
         if (!response.ok) {
-            throw new Error(data.error || "Failed to generate notes.");
-        }
 
-
-        const generatedText =
-            data.notes ||
-            data.content ||
-            data.text ||
-            "";
-
-
-        if (!generatedText) {
-            throw new Error("No notes were returned.");
-        }
-
-
-        notes.innerHTML = markdownToHtml(generatedText);
-
-        resultCard.style.display = "block";
-
-
-        /*
-           Render Mermaid diagrams
-        */
-
-        if (window.mermaid) {
-
-            try {
-
-                await mermaid.run({
-                    querySelector: ".mermaid"
-                });
-
-            } catch (error) {
-
-                console.error(
-                    "Mermaid rendering error:",
-                    error
-                );
-
-            }
+            throw new Error(
+                data.error ||
+                "Failed to generate notes."
+            );
 
         }
 
 
         /*
-           Render MathJax
+           Save the generated note temporarily.
         */
 
-        if (window.MathJax) {
+        currentNote = {
 
-            await MathJax.typesetPromise([
-                notes
-            ]);
+            id: Date.now(),
 
-        }
+            title:
+                topicValue ||
+                pdfFile.files[0]?.name ||
+                "Study Notes",
 
+            content:
+                data.notes ||
+                data.text ||
+                data.result ||
+                "",
+
+            date:
+                new Date().toISOString(),
+
+            favorite: false
+
+        };
+
+
+        resultCard.classList.add("show");
+
+
+        /*
+           Automatically store it in the library
+           so the user can immediately open it.
+        */
+
+        saveCurrentNote();
+
+
+        /*
+           Scroll to success message
+        */
 
         resultCard.scrollIntoView({
-            behavior: "smooth"
+            behavior: "smooth",
+            block: "center"
         });
-
-
-        /*
-           Store current generated note temporarily
-        */
-
-        window.currentNote = {
-            title: topic || "PDF Notes",
-            content: generatedText,
-            html: notes.innerHTML,
-            date: new Date().toISOString()
-        };
 
 
     } catch (error) {
@@ -362,345 +291,606 @@ generateButton.addEventListener("click", async () => {
         console.error(error);
 
         alert(
-            "Something went wrong:\n\n" +
-            error.message
+            error.message ||
+            "Something went wrong while generating notes."
         );
 
     } finally {
 
         generateButton.disabled = false;
-        loading.style.display = "none";
+
+        loading.classList.remove("show");
 
     }
 
 });
 
 
-/* =========================
-   SAVE NOTES
-========================= */
+/* ================= SAVE NOTE ================= */
 
-saveButton.addEventListener("click", () => {
+function getStoredNotes() {
 
-    if (!window.currentNote) {
+    try {
 
-        alert("Generate some notes first.");
+        return JSON.parse(
+            localStorage.getItem("studyNotes")
+        ) || [];
 
-        return;
+    } catch {
+
+        return [];
+
     }
 
-
-    const savedNotes =
-        JSON.parse(
-            localStorage.getItem("studyNotes") || "[]"
-        );
+}
 
 
-    const note = {
-        id: Date.now(),
-        title: window.currentNote.title,
-        content: window.currentNote.content,
-        html: window.currentNote.html,
-        date: window.currentNote.date
-    };
-
-
-    savedNotes.unshift(note);
-
+function setStoredNotes(notes) {
 
     localStorage.setItem(
         "studyNotes",
-        JSON.stringify(savedNotes)
+        JSON.stringify(notes)
     );
 
-
-    saveButton.textContent = "✅ Saved";
-
-    setTimeout(() => {
-        saveButton.textContent = "💾 Save";
-    }, 1500);
+}
 
 
-    loadSavedNotes();
+function saveCurrentNote() {
 
-});
-
-
-/* =========================
-   LOAD SAVED NOTES
-========================= */
-
-function loadSavedNotes() {
-
-    const savedNotes =
-        JSON.parse(
-            localStorage.getItem("studyNotes") || "[]"
-        );
-
-
-    if (savedNotes.length === 0) {
-
-        savedNotesContainer.innerHTML = `
-            <div class="empty-notes">
-
-                <div class="empty-icon">📚</div>
-
-                <h2>No saved notes yet</h2>
-
-                <p>
-                    Generate and save your first set of notes.
-                </p>
-
-                <button
-                    id="startCreatingButton"
-                    class="generate-button"
-                >
-                    ✨ Create Notes
-                </button>
-
-            </div>
-        `;
-
-
-        document
-            .getElementById("startCreatingButton")
-            .addEventListener(
-                "click",
-                showGenerator
-            );
-
-
+    if (!currentNote) {
         return;
     }
 
+    const notes = getStoredNotes();
 
-    savedNotesContainer.innerHTML = "";
+    const existingIndex =
+        notes.findIndex(
+            note => note.id === currentNote.id
+        );
 
 
-    savedNotes.forEach(note => {
+    if (existingIndex >= 0) {
+
+        notes[existingIndex] =
+            currentNote;
+
+    } else {
+
+        notes.unshift(
+            currentNote
+        );
+
+    }
+
+
+    setStoredNotes(notes);
+
+    renderSavedNotes();
+
+}
+
+
+/* ================= RENDER NOTES ================= */
+
+function renderSavedNotes() {
+
+    let notes = getStoredNotes();
+
+
+    /*
+       Search
+    */
+
+    const search =
+        notesSearch.value
+            .trim()
+            .toLowerCase();
+
+
+    if (search) {
+
+        notes = notes.filter(note =>
+            note.title
+                .toLowerCase()
+                .includes(search)
+        );
+
+    }
+
+
+    /*
+       Sorting
+    */
+
+    const sort =
+        notesSort.value;
+
+
+    if (sort === "newest") {
+
+        notes.sort(
+            (a, b) =>
+                new Date(b.date) -
+                new Date(a.date)
+        );
+
+    }
+
+
+    if (sort === "oldest") {
+
+        notes.sort(
+            (a, b) =>
+                new Date(a.date) -
+                new Date(b.date)
+        );
+
+    }
+
+
+    if (sort === "az") {
+
+        notes.sort(
+            (a, b) =>
+                a.title.localeCompare(b.title)
+        );
+
+    }
+
+
+    savedNotes.innerHTML = "";
+
+
+    if (notes.length === 0) {
+
+        emptyNotes.style.display =
+            "block";
+
+        return;
+
+    }
+
+
+    emptyNotes.style.display =
+        "none";
+
+
+    notes.forEach(note => {
 
         const card =
             document.createElement("div");
 
-        card.className = "saved-note-card";
+        card.className =
+            "saved-note";
 
 
         const date =
             new Date(note.date)
-                .toLocaleDateString();
+                .toLocaleDateString(
+                    undefined,
+                    {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric"
+                    }
+                );
 
 
         card.innerHTML = `
 
-            <h3>${escapeHtml(note.title)}</h3>
-
-            <div class="saved-note-date">
-                Saved ${date}
+            <div class="note-book-icon">
+                ${note.favorite ? "⭐" : "📘"}
             </div>
 
-            <div class="saved-note-actions">
+            <div class="saved-note-info">
+
+                <h3 class="saved-note-title">
+                    ${escapeHtml(note.title)}
+                </h3>
+
+                <div class="saved-note-date">
+                    Saved ${date}
+                </div>
+
+            </div>
+
+            <div class="note-menu-wrapper">
 
                 <button
-                    class="open-note"
-                    data-id="${note.id}"
+                    class="note-menu-button"
+                    data-menu-id="${note.id}"
+                    title="Options"
                 >
-                    📖 Open
+                    ▼
                 </button>
 
-                <button
-                    class="download-saved"
-                    data-id="${note.id}"
+                <div
+                    class="note-menu"
+                    id="menu-${note.id}"
                 >
-                    📥 Download
-                </button>
 
-                <button
-                    class="delete-note"
-                    data-id="${note.id}"
-                >
-                    🗑️
-                </button>
+                    <button
+                        data-action="open"
+                        data-id="${note.id}"
+                    >
+                        📖 Open
+                    </button>
+
+                    <button
+                        data-action="save"
+                        data-id="${note.id}"
+                    >
+                        💾 Save
+                    </button>
+
+                    <button
+                        data-action="download"
+                        data-id="${note.id}"
+                    >
+                        📄 Download as PDF
+                    </button>
+
+                    <button
+                        data-action="favorite"
+                        data-id="${note.id}"
+                    >
+                        ⭐ ${note.favorite ? "Remove Favorite" : "Favorite"}
+                    </button>
+
+                    <button
+                        data-action="delete"
+                        data-id="${note.id}"
+                    >
+                        🗑️ Delete
+                    </button>
+
+                </div>
 
             </div>
         `;
 
 
-        savedNotesContainer.appendChild(card);
+        savedNotes.appendChild(card);
 
     });
-
-
-    /*
-       Open buttons
-    */
-
-    document
-        .querySelectorAll(".open-note")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const id =
-                        Number(button.dataset.id);
-
-                    openSavedNote(id);
-
-                }
-            );
-
-        });
-
-
-    /*
-       Download buttons
-    */
-
-    document
-        .querySelectorAll(".download-saved")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const id =
-                        Number(button.dataset.id);
-
-                    downloadNoteById(id);
-
-                }
-            );
-
-        });
-
-
-    /*
-       Delete buttons
-    */
-
-    document
-        .querySelectorAll(".delete-note")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const id =
-                        Number(button.dataset.id);
-
-                    deleteNote(id);
-
-                }
-            );
-
-        });
 
 }
 
 
-/* =========================
-   OPEN SAVED NOTE
-========================= */
+/* ================= MENU BUTTON ================= */
 
-function openSavedNote(id) {
+savedNotes.addEventListener("click", (event) => {
 
-    const savedNotes =
-        JSON.parse(
-            localStorage.getItem("studyNotes") || "[]"
+    const menuButton =
+        event.target.closest(
+            ".note-menu-button"
         );
 
 
+    if (menuButton) {
+
+        const id =
+            menuButton.dataset.menuId;
+
+        document
+            .querySelectorAll(".note-menu")
+            .forEach(menu => {
+
+                if (
+                    menu.id !==
+                    `menu-${id}`
+                ) {
+
+                    menu.classList.remove(
+                        "show"
+                    );
+
+                }
+
+            });
+
+
+        const menu =
+            document.getElementById(
+                `menu-${id}`
+            );
+
+
+        menu.classList.toggle("show");
+
+        return;
+
+    }
+
+
+    const actionButton =
+        event.target.closest(
+            "[data-action]"
+        );
+
+
+    if (!actionButton) {
+        return;
+    }
+
+
+    const action =
+        actionButton.dataset.action;
+
+    const id =
+        Number(actionButton.dataset.id);
+
+
+    const notes =
+        getStoredNotes();
+
     const note =
-        savedNotes.find(
+        notes.find(
             item => item.id === id
         );
 
 
-    if (!note) return;
+    if (!note) {
+        return;
+    }
 
 
-    showGenerator();
+    if (action === "open") {
+
+        openNote(note);
+
+    }
 
 
-    notes.innerHTML = note.html;
+    if (action === "save") {
 
-    resultCard.style.display = "block";
+        saveNoteAgain(note);
+
+    }
 
 
-    window.currentNote = note;
+    if (action === "download") {
+
+        downloadPDF(note);
+
+    }
 
 
-    resultCard.scrollIntoView({
-        behavior: "smooth"
+    if (action === "favorite") {
+
+        toggleFavorite(id);
+
+    }
+
+
+    if (action === "delete") {
+
+        deleteNote(id);
+
+    }
+
+
+    document
+        .querySelectorAll(".note-menu")
+        .forEach(menu =>
+            menu.classList.remove("show")
+        );
+
+});
+
+
+/* ================= OPEN NOTE ================= */
+
+function openNote(note) {
+
+    currentlyReadingNote =
+        note;
+
+
+    readingContent.innerHTML =
+        markdownToHtml(
+            note.content
+        );
+
+
+    generatePage.style.display =
+        "none";
+
+    yourNotesPage.style.display =
+        "none";
+
+
+    readingPage.classList.add(
+        "active"
+    );
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "instant"
     });
 
 
     /*
-       Re-render maths
+       Render Mermaid diagrams
     */
 
-    if (window.MathJax) {
+    if (
+        typeof mermaid !== "undefined"
+    ) {
 
-        MathJax.typesetPromise([
-            notes
-        ]);
+        const diagrams =
+            readingContent
+                .querySelectorAll(
+                    ".mermaid"
+                );
+
+
+        if (diagrams.length) {
+
+            mermaid.run({
+                nodes: diagrams
+            }).catch(error => {
+
+                console.error(
+                    "Mermaid error:",
+                    error
+                );
+
+            });
+
+        }
+
+    }
+
+
+    /*
+       Render maths
+    */
+
+    if (
+        window.MathJax &&
+        window.MathJax.typesetPromise
+    ) {
+
+        window.MathJax
+            .typesetPromise([
+                readingContent
+            ])
+            .catch(error => {
+
+                console.error(
+                    "MathJax error:",
+                    error
+                );
+
+            });
 
     }
 
 }
 
 
-/* =========================
-   DELETE NOTE
-========================= */
+/* ================= SAVE AGAIN ================= */
 
-function deleteNote(id) {
+function saveNoteAgain(note) {
 
-    const savedNotes =
-        JSON.parse(
-            localStorage.getItem("studyNotes") || "[]"
+    const notes =
+        getStoredNotes();
+
+
+    const index =
+        notes.findIndex(
+            item => item.id === note.id
         );
 
 
-    const updated =
-        savedNotes.filter(
-            note => note.id !== id
+    if (index >= 0) {
+
+        notes[index] =
+            note;
+
+        setStoredNotes(notes);
+
+        currentNote =
+            note;
+
+        alert(
+            "Note saved successfully."
         );
 
-
-    localStorage.setItem(
-        "studyNotes",
-        JSON.stringify(updated)
-    );
-
-
-    loadSavedNotes();
+    }
 
 }
 
 
-/* =========================
-   DOWNLOAD PDF
-========================= */
+/* ================= READING SAVE ================= */
 
-async function downloadPDF(
-    title,
-    htmlContent
-) {
+readingSaveButton.addEventListener(
+    "click",
+    () => {
 
-    /*
-       Uses browser print system.
+        if (!currentlyReadingNote) {
+            return;
+        }
 
-       On desktop:
-       choose "Save as PDF".
+        saveNoteAgain(
+            currentlyReadingNote
+        );
 
-       On phones:
-       the browser can use its
-       share/save/print options.
-    */
+    }
+);
+
+
+/* ================= DELETE ================= */
+
+function deleteNote(id) {
+
+    const confirmed =
+        confirm(
+            "Delete this note?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const notes =
+        getStoredNotes()
+            .filter(
+                note =>
+                    note.id !== id
+            );
+
+
+    setStoredNotes(notes);
+
+    renderSavedNotes();
+
+}
+
+
+/* ================= FAVORITE ================= */
+
+function toggleFavorite(id) {
+
+    const notes =
+        getStoredNotes();
+
+
+    const note =
+        notes.find(
+            item => item.id === id
+        );
+
+
+    if (!note) {
+        return;
+    }
+
+
+    note.favorite =
+        !note.favorite;
+
+
+    setStoredNotes(notes);
+
+    renderSavedNotes();
+
+}
+
+
+/* ================= PDF DOWNLOAD ================= */
+
+function downloadPDF(note) {
+
+    const html =
+        markdownToHtml(
+            note.content
+        );
+
 
     const printWindow =
         window.open(
@@ -712,10 +902,11 @@ async function downloadPDF(
     if (!printWindow) {
 
         alert(
-            "Please allow pop-ups to download your notes."
+            "Please allow pop-ups to download the PDF."
         );
 
         return;
+
     }
 
 
@@ -727,44 +918,46 @@ async function downloadPDF(
 
         <head>
 
-            <title>${escapeHtml(title)}</title>
+            <title>
+                ${escapeHtml(note.title)}
+            </title>
 
             <style>
 
                 body {
-                    font-family: Arial, sans-serif;
-                    padding: 35px;
-                    color: #1e293b;
-                    line-height: 1.6;
+                    margin: 0;
+                    padding: 50px;
+                    color: #29352d;
+                    background: #fffdf7;
+                    font-family: Georgia, serif;
+                    line-height: 1.8;
+                }
+
+                .page {
+                    max-width: 800px;
+                    margin: auto;
                 }
 
                 h1 {
-                    color: #312e81;
+                    color: #14532d;
+                    font-size: 32px;
+                    border-bottom: 3px double #4f8b68;
+                    padding-bottom: 15px;
                 }
 
                 h2 {
-                    color: #4338ca;
-                    background: #eef2ff;
-                    padding: 12px;
-                    border-left: 5px solid #6366f1;
-                    border-radius: 6px;
-                    margin-top: 25px;
+                    color: #166534;
+                    margin-top: 35px;
+                    border-bottom: 1px solid #b9cdbf;
+                    padding-bottom: 6px;
                 }
 
                 h3 {
-                    color: #4338ca;
+                    color: #0f766e;
                 }
 
                 strong {
-                    color: #4338ca;
-                }
-
-                p {
-                    margin: 10px 0;
-                }
-
-                li {
-                    margin: 6px 0;
+                    color: #14532d;
                 }
 
                 table {
@@ -773,18 +966,25 @@ async function downloadPDF(
                     margin: 20px 0;
                 }
 
-                th,
-                td {
-                    border: 1px solid #ddd;
-                    padding: 9px;
+                th {
+                    background: #dff3e8;
+                    color: #14532d;
+                    text-align: left;
                 }
 
-                th {
-                    background: #eef2ff;
+                th, td {
+                    padding: 9px;
+                    border: 1px solid #bfd5c7;
+                }
+
+                blockquote {
+                    background: #eaf7f0;
+                    border-left: 5px solid #16856f;
+                    padding: 14px;
                 }
 
                 pre {
-                    background: #111827;
+                    background: #18352a;
                     color: white;
                     padding: 15px;
                     border-radius: 8px;
@@ -805,208 +1005,205 @@ async function downloadPDF(
 
         <body>
 
-            <h1>${escapeHtml(title)}</h1>
+            <div class="page">
 
-            ${htmlContent}
+                <h1>
+                    ${escapeHtml(note.title)}
+                </h1>
+
+                ${html}
+
+            </div>
+
+            <script>
+
+                window.onload = function() {
+                    window.print();
+                };
+
+            <\/script>
 
         </body>
 
         </html>
+
     `);
 
 
     printWindow.document.close();
 
-
-    setTimeout(() => {
-
-        printWindow.focus();
-
-        printWindow.print();
-
-    }, 700);
-
 }
 
 
-/* =========================
-   CURRENT NOTE DOWNLOAD
-========================= */
+/* ================= READING PDF ================= */
 
-downloadButton.addEventListener(
+readingDownloadButton.addEventListener(
     "click",
     () => {
 
-        if (!window.currentNote) {
-
-            alert("Generate notes first.");
-
+        if (!currentlyReadingNote) {
             return;
         }
 
-
         downloadPDF(
-            window.currentNote.title,
-            window.currentNote.html
+            currentlyReadingNote
         );
 
     }
 );
 
 
-/* =========================
-   SAVED NOTE DOWNLOAD
-========================= */
+/* ================= BACK ================= */
 
-function downloadNoteById(id) {
+backToNotes.addEventListener(
+    "click",
+    () => {
 
-    const savedNotes =
-        JSON.parse(
-            localStorage.getItem("studyNotes") || "[]"
+        readingPage.classList.remove(
+            "active"
         );
 
+        yourNotesPage.style.display =
+            "block";
 
-    const note =
-        savedNotes.find(
-            item => item.id === id
+        generatePage.style.display =
+            "none";
+
+        generateTab.classList.remove(
+            "active"
         );
 
+        yourNotesTab.classList.add(
+            "active"
+        );
 
-    if (!note) return;
+        renderSavedNotes();
+
+        window.scrollTo({
+            top: 0,
+            behavior: "instant"
+        });
+
+    }
+);
 
 
-    downloadPDF(
-        note.title,
-        note.html
+/* ================= PAGE SWITCHING ================= */
+
+function showPage(pageName) {
+
+    readingPage.classList.remove(
+        "active"
     );
 
-}
+
+    generatePage.style.display =
+        "none";
+
+    yourNotesPage.style.display =
+        "none";
 
 
-/* =========================
-   COPY
-========================= */
+    if (pageName === "generatePage") {
 
-copyButton.addEventListener(
-    "click",
-    async () => {
+        generatePage.style.display =
+            "block";
 
-        if (!window.currentNote) return;
+        generateTab.classList.add(
+            "active"
+        );
 
-
-        try {
-
-            await navigator.clipboard.writeText(
-                window.currentNote.content
-            );
-
-
-            copyButton.textContent =
-                "✅ Copied";
-
-
-            setTimeout(() => {
-
-                copyButton.textContent =
-                    "📋 Copy";
-
-            }, 1500);
-
-
-        } catch (error) {
-
-            alert(
-                "Could not copy the notes."
-            );
-
-        }
+        yourNotesTab.classList.remove(
+            "active"
+        );
 
     }
-);
 
 
-/* =========================
-   TABS
-========================= */
+    if (pageName === "yourNotesPage") {
 
-function showGenerator() {
+        yourNotesPage.style.display =
+            "block";
 
-    generatorPage.style.display = "block";
-    yourNotesPage.style.display = "none";
+        generateTab.classList.remove(
+            "active"
+        );
 
-    generateTab.classList.add("active");
-    yourNotesTab.classList.remove("active");
+        yourNotesTab.classList.add(
+            "active"
+        );
 
-}
+        renderSavedNotes();
+
+    }
 
 
-function showYourNotes() {
-
-    generatorPage.style.display = "none";
-    yourNotesPage.style.display = "block";
-
-    generateTab.classList.remove("active");
-    yourNotesTab.classList.add("active");
-
-    loadSavedNotes();
+    window.scrollTo({
+        top: 0,
+        behavior: "instant"
+    });
 
 }
 
 
 generateTab.addEventListener(
     "click",
-    showGenerator
+    () => showPage("generatePage")
 );
 
 
 yourNotesTab.addEventListener(
     "click",
-    showYourNotes
+    () => showPage("yourNotesPage")
 );
 
 
-if (startCreatingButton) {
-
-    startCreatingButton.addEventListener(
-        "click",
-        showGenerator
-    );
-
-}
-
-
-/* =========================
-   THEME
-========================= */
-
-themeButton.addEventListener(
+viewNotesButton.addEventListener(
     "click",
-    () => {
+    () => showPage("yourNotesPage")
+);
 
-        document.body.classList.toggle(
-            "dark"
-        );
 
+startCreatingButton.addEventListener(
+    "click",
+    () => showPage("generatePage")
+);
+
+
+/* ================= SEARCH & SORT ================= */
+
+notesSearch.addEventListener(
+    "input",
+    renderSavedNotes
+);
+
+notesSort.addEventListener(
+    "change",
+    renderSavedNotes
+);
+
+
+/* ================= CLOSE MENUS ================= */
+
+document.addEventListener(
+    "click",
+    (event) => {
 
         if (
-            document.body.classList.contains("dark")
+            !event.target.closest(
+                ".note-menu-wrapper"
+            )
         ) {
 
-            themeButton.textContent = "☀️";
-
-            localStorage.setItem(
-                "theme",
-                "dark"
-            );
-
-        } else {
-
-            themeButton.textContent = "🌙";
-
-            localStorage.setItem(
-                "theme",
-                "light"
-            );
+            document
+                .querySelectorAll(
+                    ".note-menu"
+                )
+                .forEach(menu =>
+                    menu.classList.remove(
+                        "show"
+                    )
+                );
 
         }
 
@@ -1014,19 +1211,59 @@ themeButton.addEventListener(
 );
 
 
-/* Restore theme */
+/* ================= THEME ================= */
 
-if (
-    localStorage.getItem("theme") === "dark"
-) {
+function applyTheme() {
 
-    document.body.classList.add("dark");
+    const dark =
+        localStorage.getItem(
+            "darkMode"
+        ) === "true";
 
-    themeButton.textContent = "☀️";
+
+    document.body.classList.toggle(
+        "dark",
+        dark
+    );
+
+
+    themeButton.textContent =
+        dark ? "☀️" : "🌙";
 
 }
 
 
-/* Initial library */
+themeButton.addEventListener(
+    "click",
+    () => {
 
-loadSavedNotes();
+        const dark =
+            !document.body.classList.contains(
+                "dark"
+            );
+
+
+        document.body.classList.toggle(
+            "dark",
+            dark
+        );
+
+
+        localStorage.setItem(
+            "darkMode",
+            dark
+        );
+
+
+        themeButton.textContent =
+            dark ? "☀️" : "🌙";
+
+    }
+);
+
+
+/* ================= INITIALIZE ================= */
+
+applyTheme();
+
+renderSavedNotes();

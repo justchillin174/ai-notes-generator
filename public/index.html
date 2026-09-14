@@ -8,14 +8,19 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
 
-    <!-- Mermaid -->
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: false,
+            securityLevel: "loose"
+        });
+    </script>
 
-    <!-- MathJax -->
     <script>
         window.MathJax = {
             tex: {
@@ -33,215 +38,317 @@
 
 <body>
 
-<header class="header">
-    <div class="logo">
-        <span class="logo-icon">📚</span>
-        <span>StudyNotes</span>
+<header class="top-header">
+    <div class="header-inner">
+
+        <div class="brand" onclick="showPage('generatePage')">
+            <div class="brand-icon">🌿</div>
+            <div>
+                <div class="brand-name">AI Notes</div>
+                <div class="brand-subtitle">Smart Study Assistant</div>
+            </div>
+        </div>
+
+        <nav class="main-nav">
+            <button id="generateTab" class="nav-button active">
+                ✨ Generate Notes
+            </button>
+
+            <button id="yourNotesTab" class="nav-button">
+                📚 Your Notes
+            </button>
+
+            <button id="themeButton" class="theme-button" title="Change theme">
+                🌙
+            </button>
+        </nav>
+
     </div>
-
-    <nav class="nav">
-        <button id="generateTab" class="nav-button active">
-            ✨ Generate Notes
-        </button>
-
-        <button id="yourNotesTab" class="nav-button">
-            📚 Your Notes
-        </button>
-    </nav>
-
-    <button id="themeButton" class="theme-button">
-        🌙
-    </button>
 </header>
 
 
-<main class="container">
+<main class="app-container">
 
-    <!-- GENERATOR PAGE -->
-    <section id="generatorPage">
+    <!-- ================= GENERATE PAGE ================= -->
 
-        <div class="hero">
+    <section id="generatePage" class="page active-page">
+
+        <div class="hero-section">
+
             <div class="hero-badge">
-                ✨ Smart Study Assistant
+                🌱 AI-powered study assistant
             </div>
 
             <h1>Create beautiful study notes</h1>
 
             <p>
-                Enter any topic or upload a PDF and create clear,
-                organised notes for studying.
+                Turn any topic or PDF into clear, organized and exam-ready notes.
             </p>
+
         </div>
 
 
-        <div class="card generator-card">
+        <div class="generator-card">
 
-            <div class="input-group">
-                <label for="topic">What do you want to study?</label>
+            <div class="input-section">
+
+                <label for="topic">
+                    📚 What do you want to study?
+                </label>
 
                 <textarea
                     id="topic"
-                    placeholder="Example: Photosynthesis, French Revolution, Quadratic Equations..."
-                    rows="4"
+                    placeholder="Enter a topic, chapter or question..."
+                    rows="5"
                 ></textarea>
+
             </div>
 
 
-            <div class="input-group">
-                <label>Reference PDF <span>(optional)</span></label>
+            <div class="upload-section">
 
-                <div class="pdf-upload">
+                <label class="upload-box" for="pdfFile">
+
+                    <div class="upload-icon">
+                        📄
+                    </div>
+
+                    <div>
+                        <strong>Upload a PDF</strong>
+                        <span>
+                            Use a textbook, chapter or study material
+                        </span>
+                    </div>
+
                     <input
                         type="file"
                         id="pdfFile"
                         accept=".pdf"
                     >
 
-                    <label for="pdfFile" class="upload-button">
-                        📄 Choose PDF
+                </label>
+
+                <div id="fileName" class="file-name"></div>
+
+            </div>
+
+
+            <div class="options-grid">
+
+                <div class="option-group">
+
+                    <label for="level">
+                        🎓 Student level
                     </label>
 
-                    <span id="fileName" class="file-name">
-                        No file selected
-                    </span>
-                </div>
-            </div>
-
-
-            <div class="options">
-
-                <div class="input-group">
-                    <label for="level">Student level</label>
-
                     <select id="level">
-                        <option value="school">School</option>
-                        <option value="middle school">Middle School</option>
-                        <option value="high school">High School</option>
-                        <option value="college">College</option>
+                        <option value="Class 6-8">Class 6–8</option>
+                        <option value="Class 9-10" selected>Class 9–10</option>
+                        <option value="Class 11-12">Class 11–12</option>
+                        <option value="College">College</option>
+                        <option value="General">General</option>
                     </select>
+
                 </div>
 
 
-                <div class="input-group">
-                    <label for="length">Note length</label>
+                <div class="option-group">
+
+                    <label for="length">
+                        📏 Note length
+                    </label>
 
                     <select id="length">
-                        <option value="short">Short</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="detailed">Detailed</option>
+                        <option value="Short">Short</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="Detailed">Detailed</option>
                     </select>
+
                 </div>
 
             </div>
 
 
-            <div class="check-options">
+            <div class="extra-options">
 
                 <label class="check-option">
                     <input type="checkbox" id="mcq">
-                    <span>📝 Include MCQs</span>
+                    <span class="checkmark"></span>
+                    <span>
+                        <strong>MCQs</strong>
+                        <small>Practice questions</small>
+                    </span>
                 </label>
+
 
                 <label class="check-option">
                     <input type="checkbox" id="flashcards">
-                    <span>🗂️ Include Flashcards</span>
+                    <span class="checkmark"></span>
+                    <span>
+                        <strong>Flashcards</strong>
+                        <small>Quick revision</small>
+                    </span>
                 </label>
 
             </div>
 
 
-           <button id="generateButton" class="generate-button">
-    ✨ Generate Notes
-</button>
+            <button id="generateButton" class="generate-button">
+                ✨ Generate Notes
+            </button>
 
-<p class="patience-message">
-    *Notes may take some time to generate. Please keep some patience.
-    This problem will soon be solved. Thank you.
-</p>
 
-<div id="loading" class="loading">
-    <div class="loading-spinner"></div>
-    <span>Creating notes...</span>
-</div>
+            <p class="patience-message">
+                *Notes may take some time to generate. Please keep some patience.
+                This problem will soon be solved. Thank you.
+            </p>
 
-        <!-- RESULT -->
-        <section id="resultCard" class="result-card">
 
-            <div class="result-header">
+            <div id="loading" class="loading">
 
-                <div>
-                    <span class="result-label">
-                        GENERATED CONTENT
-                    </span>
+                <div class="loading-spinner"></div>
 
-                    <h2>Your Notes</h2>
-                </div>
-
-                <div class="result-actions">
-
-                    <button id="saveButton" class="action-button">
-                        💾 Save
-                    </button>
-
-                    <button id="copyButton" class="action-button">
-                        📋 Copy
-                    </button>
-
-                    <button id="downloadButton" class="action-button primary-action">
-                        📥 Download PDF
-                    </button>
-
-                </div>
+                <span>Creating notes...</span>
 
             </div>
 
+        </div>
 
-            <div id="notes" class="notes"></div>
 
-        </section>
+        <!-- Generation completed message -->
+
+        <div id="resultCard" class="result-card">
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+            <div>
+                <h3>Notes created successfully</h3>
+                <p>
+                    Your notes are ready. Open Your Notes to manage them.
+                </p>
+            </div>
+
+            <button id="viewNotesButton" class="secondary-button">
+                📚 Your Notes
+            </button>
+
+        </div>
 
     </section>
 
 
 
-    <!-- YOUR NOTES PAGE -->
-    <section id="yourNotesPage" class="your-notes-page">
+    <!-- ================= YOUR NOTES PAGE ================= -->
+
+    <section id="yourNotesPage" class="page">
 
         <div class="page-heading">
 
             <div>
-                <div class="hero-badge">
+                <div class="small-heading">
                     📚 Your Library
                 </div>
 
                 <h1>Your Notes</h1>
 
                 <p>
-                    Your saved notes are stored on this device and can
-                    be opened even when you're offline.
+                    Your saved notes are stored here for quick access.
                 </p>
             </div>
 
         </div>
 
 
-        <div id="savedNotes" class="saved-notes">
+        <div class="notes-toolbar">
 
-            <div class="empty-notes">
-                <div class="empty-icon">📚</div>
+            <div class="search-box">
 
-                <h2>No saved notes yet</h2>
+                <span>🔍</span>
 
-                <p>
-                    Generate and save your first set of notes.
-                </p>
+                <input
+                    type="text"
+                    id="notesSearch"
+                    placeholder="Search your notes..."
+                >
 
-                <button id="startCreatingButton" class="generate-button">
-                    ✨ Create Notes
+            </div>
+
+
+            <select id="notesSort">
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+                <option value="az">A–Z</option>
+            </select>
+
+        </div>
+
+
+        <div id="savedNotes" class="saved-notes-grid"></div>
+
+
+        <div id="emptyNotes" class="empty-notes">
+
+            <div class="empty-icon">
+                📖
+            </div>
+
+            <h2>No saved notes yet</h2>
+
+            <p>
+                Generate your first notes and save them here.
+            </p>
+
+            <button
+                id="startCreatingButton"
+                class="secondary-button"
+            >
+                ✨ Start Creating
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= READING PAGE ================= -->
+
+    <section id="readingPage" class="reading-page">
+
+        <div class="reading-toolbar">
+
+            <button
+                id="backToNotes"
+                class="back-button"
+            >
+                ← Back to Your Notes
+            </button>
+
+
+            <div class="reading-actions">
+
+                <button
+                    id="readingSaveButton"
+                    class="reading-button"
+                >
+                    💾 Save
                 </button>
+
+                <button
+                    id="readingDownloadButton"
+                    class="reading-button"
+                >
+                    📄 Download PDF
+                </button>
+
             </div>
 
         </div>
+
+
+        <article id="readingContent" class="textbook-page"></article>
 
     </section>
 
