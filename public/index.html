@@ -4,146 +4,239 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>StudyAI — AI Notes Generator</title>
+    <title>StudyAI - AI Notes Generator</title>
 
     <link rel="stylesheet" href="style.css">
 
+    <!-- Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
+    <!-- ================= NAVBAR ================= -->
+
+    <header class="navbar">
+
         <div class="logo">
             <span class="logo-icon">📚</span>
             <span>StudyAI</span>
         </div>
 
-        <div class="nav-tabs">
-            <button class="nav-tab active" data-tab="notes">📝 Notes</button>
-            <button class="nav-tab" data-tab="books">📖 Books</button>
-        </div>
-    </nav>
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="notes">
+                📝 Notes
+            </button>
+
+            <button class="nav-tab" data-tab="books">
+                📖 Books
+            </button>
+        </nav>
+
+    </header>
 
 
-    <!-- MAIN -->
+    <!-- ================= MAIN ================= -->
+
     <main>
 
-        <!-- NOTES TAB -->
+
+        <!-- ================= NOTES TAB ================= -->
+
         <section id="notesTab" class="tab-content active">
 
-            <div class="hero">
-                <div class="hero-badge">✨ AI-Powered Learning</div>
+            <!-- HERO -->
 
-                <h1>Turn any topic into<br><span>smart study notes.</span></h1>
+            <section class="hero">
+
+                <div class="hero-badge">
+                    ✨ AI-Powered Learning
+                </div>
+
+                <h1>
+                    Turn any topic into
+                    <br>
+                    <span>smart study notes.</span>
+                </h1>
 
                 <p>
                     Generate clear, structured and exam-ready notes
                     using artificial intelligence.
                 </p>
-            </div>
+
+            </section>
 
 
-            <!-- GENERATOR CARD -->
-            <div class="generator-card">
+            <!-- GENERATOR -->
+
+            <section class="generator-card">
 
                 <div class="card-header">
+
                     <div>
                         <h2>Generate Your Notes</h2>
-                        <p>Enter any topic and let AI do the hard work.</p>
+
+                        <p>
+                            Enter any topic and let AI do the hard work.
+                        </p>
                     </div>
+
                 </div>
 
 
                 <form id="notesForm">
 
+
                     <!-- TOPIC -->
+
                     <div class="form-group">
-                        <label for="topic">What do you want to learn?</label>
+
+                        <label for="topic">
+                            What do you want to learn?
+                        </label>
 
                         <textarea
                             id="topic"
                             name="topic"
-                            rows="5"
                             placeholder="Example: Photosynthesis, Newton's Laws, French Revolution..."
+                            rows="5"
                             required
                         ></textarea>
+
                     </div>
 
 
                     <!-- OPTIONS -->
+
                     <div class="options-grid">
 
+
                         <div class="form-group">
-                            <label for="level">Study Level</label>
+
+                            <label for="level">
+                                Study Level
+                            </label>
 
                             <select id="level" name="level">
-                                <option value="school">School</option>
-                                <option value="middle-school">Middle School</option>
-                                <option value="high-school">High School</option>
-                                <option value="college">College</option>
-                                <option value="competitive">Competitive Exams</option>
+
+                                <option value="school">
+                                    School
+                                </option>
+
+                                <option value="middle-school">
+                                    Middle School
+                                </option>
+
+                                <option value="high-school">
+                                    High School
+                                </option>
+
+                                <option value="college">
+                                    College
+                                </option>
+
+                                <option value="competitive">
+                                    Competitive Exams
+                                </option>
+
                             </select>
+
                         </div>
 
 
                         <div class="form-group">
-                            <label for="length">Notes Length</label>
+
+                            <label for="length">
+                                Notes Length
+                            </label>
 
                             <select id="length" name="length">
-                                <option value="short">Short</option>
-                                <option value="medium" selected>Medium</option>
-                                <option value="long">Detailed</option>
+
+                                <option value="short">
+                                    Short
+                                </option>
+
+                                <option value="medium" selected>
+                                    Medium
+                                </option>
+
+                                <option value="long">
+                                    Detailed
+                                </option>
+
                             </select>
+
                         </div>
 
                     </div>
 
 
-                    <!-- CHECKBOXES -->
+                    <!-- EXTRA OPTIONS -->
+
                     <div class="extra-options">
 
                         <label class="checkbox-label">
+
                             <input
                                 type="checkbox"
                                 id="includeMCQ"
                                 name="includeMCQ"
                                 checked
                             >
-                            <span>Generate MCQs</span>
+
+                            <span>
+                                Generate MCQs
+                            </span>
+
                         </label>
 
 
                         <label class="checkbox-label">
+
                             <input
                                 type="checkbox"
                                 id="includeFlashcards"
                                 name="includeFlashcards"
                                 checked
                             >
-                            <span>Generate Flashcards</span>
+
+                            <span>
+                                Generate Flashcards
+                            </span>
+
                         </label>
 
                     </div>
 
 
-                    <!-- PDF UPLOAD -->
+                    <!-- PDF -->
+
                     <div class="upload-area">
 
-                        <label for="pdfFile" class="upload-label">
+                        <label
+                            for="pdfFile"
+                            class="upload-label"
+                        >
 
-                            <div class="upload-icon">📄</div>
+                            <div class="upload-icon">
+                                📄
+                            </div>
 
                             <div>
-                                <strong>Upload a PDF</strong>
+
+                                <strong>
+                                    Upload a PDF
+                                </strong>
 
                                 <p>
-                                    Optional — let AI create notes from your textbook or study material.
+                                    Optional — generate notes from
+                                    your study material.
                                 </p>
+
                             </div>
 
                         </label>
+
 
                         <input
                             type="file"
@@ -153,15 +246,26 @@
                             hidden
                         >
 
-                        <div id="fileName" class="file-name"></div>
+
+                        <div
+                            id="fileName"
+                            class="file-name"
+                        ></div>
 
                     </div>
 
 
-                    <!-- GENERATE BUTTON -->
-                    <button type="submit" class="generate-btn" id="generateBtn">
+                    <!-- GENERATE -->
 
-                        <span id="generateIcon">✨</span>
+                    <button
+                        type="submit"
+                        class="generate-btn"
+                        id="generateBtn"
+                    >
+
+                        <span id="generateIcon">
+                            ✨
+                        </span>
 
                         <span id="generateText">
                             Generate Notes
@@ -171,26 +275,45 @@
 
                 </form>
 
-            </div>
+            </section>
 
 
-            <!-- RESULT -->
-            <section id="resultSection" class="result-section">
+            <!-- ================= RESULTS ================= -->
+
+            <section
+                id="resultSection"
+                class="result-section"
+            >
 
                 <div class="result-header">
 
                     <div>
-                        <h2>Your Study Notes</h2>
-                        <p>AI-generated notes based on your topic.</p>
+
+                        <h2>
+                            Your Study Notes
+                        </h2>
+
+                        <p>
+                            AI-generated notes based on your topic.
+                        </p>
+
                     </div>
+
 
                     <div class="result-actions">
 
-                        <button id="copyBtn" class="action-btn">
+                        <button
+                            id="copyBtn"
+                            class="action-btn"
+                        >
                             📋 Copy
                         </button>
 
-                        <button id="downloadBtn" class="action-btn">
+
+                        <button
+                            id="downloadBtn"
+                            class="action-btn"
+                        >
                             ⬇️ Download
                         </button>
 
@@ -199,7 +322,10 @@
                 </div>
 
 
-                <div id="notesOutput" class="notes-output"></div>
+                <div
+                    id="notesOutput"
+                    class="notes-output"
+                ></div>
 
             </section>
 
@@ -207,8 +333,12 @@
 
 
 
-        <!-- BOOKS TAB -->
-        <section id="booksTab" class="tab-content books-tab">
+        <!-- ================= BOOKS TAB ================= -->
+
+        <section
+            id="booksTab"
+            class="tab-content"
+        >
 
             <div class="books-container">
 
@@ -220,15 +350,19 @@
                     🚧 Coming Soon
                 </div>
 
-                <h1>Books</h1>
+                <h1>
+                    Books
+                </h1>
 
                 <p class="books-message">
-                    <strong>Feature unavailable — Development in progress 🚧</strong>
+                    <strong>
+                        Feature unavailable — Development in progress 🚧
+                    </strong>
                 </p>
 
                 <p class="books-description">
-                    The Books feature is currently being developed.
-                    It will be available in a future update.
+                    The Books feature is currently under development
+                    and will be available in a future update.
                 </p>
 
             </div>
@@ -239,48 +373,52 @@
 
 
 
-    <!-- FOOTER -->
+    <!-- ================= FOOTER ================= -->
+
     <footer>
-        <p>Made with ❤️ for smarter learning</p>
+
+        <p>
+            Made with ❤️ for smarter learning
+        </p>
+
     </footer>
 
 
 
-    <!-- JAVASCRIPT -->
+    <!-- ================= TAB SWITCHING ================= -->
+
     <script>
 
-        // ================================
-        // TAB SWITCHING
-        // ================================
+        const tabs =
+            document.querySelectorAll(".nav-tab");
 
-        const navTabs = document.querySelectorAll(".nav-tab");
+        const notesTab =
+            document.getElementById("notesTab");
 
-        const notesTab = document.getElementById("notesTab");
-        const booksTab = document.getElementById("booksTab");
+        const booksTab =
+            document.getElementById("booksTab");
 
 
-        navTabs.forEach(tab => {
+        tabs.forEach(tab => {
 
             tab.addEventListener("click", () => {
 
-                navTabs.forEach(t => {
-                    t.classList.remove("active");
+                tabs.forEach(item => {
+                    item.classList.remove("active");
                 });
 
                 tab.classList.add("active");
 
 
-                const selectedTab = tab.dataset.tab;
-
-
-                if (selectedTab === "notes") {
+                if (tab.dataset.tab === "notes") {
 
                     notesTab.classList.add("active");
                     booksTab.classList.remove("active");
 
                 }
 
-                else if (selectedTab === "books") {
+
+                if (tab.dataset.tab === "books") {
 
                     booksTab.classList.add("active");
                     notesTab.classList.remove("active");
@@ -292,291 +430,39 @@
         });
 
 
+        // PDF filename
 
-        // ================================
-        // PDF FILE NAME
-        // ================================
+        const pdfFile =
+            document.getElementById("pdfFile");
 
-        const pdfFile = document.getElementById("pdfFile");
-        const fileName = document.getElementById("fileName");
-
-
-        pdfFile.addEventListener("change", () => {
-
-            if (pdfFile.files.length > 0) {
-
-                fileName.textContent =
-                    "📎 " + pdfFile.files[0].name;
-
-            } else {
-
-                fileName.textContent = "";
-
-            }
-
-        });
+        const fileName =
+            document.getElementById("fileName");
 
 
+        if (pdfFile) {
 
-        // ================================
-        // FORM SUBMISSION
-        // ================================
+            pdfFile.addEventListener("change", () => {
 
-        const notesForm = document.getElementById("notesForm");
+                if (pdfFile.files.length > 0) {
 
-        const generateBtn =
-            document.getElementById("generateBtn");
-
-        const generateText =
-            document.getElementById("generateText");
-
-        const generateIcon =
-            document.getElementById("generateIcon");
-
-        const resultSection =
-            document.getElementById("resultSection");
-
-        const notesOutput =
-            document.getElementById("notesOutput");
-
-
-        notesForm.addEventListener("submit", async (event) => {
-
-            event.preventDefault();
-
-
-            const topic =
-                document.getElementById("topic").value.trim();
-
-            const level =
-                document.getElementById("level").value;
-
-            const length =
-                document.getElementById("length").value;
-
-            const includeMCQ =
-                document.getElementById("includeMCQ").checked;
-
-            const includeFlashcards =
-                document.getElementById("includeFlashcards").checked;
-
-
-            const pdf =
-                pdfFile.files.length > 0
-                    ? pdfFile.files[0]
-                    : null;
-
-
-            if (!topic && !pdf) {
-
-                alert("Please enter a topic or upload a PDF.");
-
-                return;
-
-            }
-
-
-            // Loading state
-
-            generateBtn.disabled = true;
-
-            generateIcon.textContent = "⏳";
-
-            generateText.textContent = "Generating...";
-
-
-            resultSection.classList.remove("active");
-
-            notesOutput.innerHTML = "";
-
-
-            try {
-
-                const formData = new FormData();
-
-
-                formData.append("topic", topic);
-                formData.append("level", level);
-                formData.append("length", length);
-                formData.append("includeMCQ", includeMCQ);
-                formData.append(
-                    "includeFlashcards",
-                    includeFlashcards
-                );
-
-
-                if (pdf) {
-                    formData.append("pdf", pdf);
-                }
-
-
-                const response =
-                    await fetch("/api/generate", {
-                        method: "POST",
-                        body: formData
-                    });
-
-
-                const data =
-                    await response.json();
-
-
-                if (!response.ok || !data.success) {
-
-                    throw new Error(
-                        data.error ||
-                        "Failed to generate notes."
-                    );
-
-                }
-
-
-                // Render Markdown
-
-                if (typeof marked !== "undefined") {
-
-                    notesOutput.innerHTML =
-                        marked.parse(data.notes || "");
+                    fileName.textContent =
+                        "📎 " + pdfFile.files[0].name;
 
                 } else {
 
-                    notesOutput.textContent =
-                        data.notes || "";
+                    fileName.textContent = "";
 
                 }
 
+            });
 
-                resultSection.classList.add("active");
-
-
-                // Scroll to result
-
-                setTimeout(() => {
-
-                    resultSection.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
-
-                }, 100);
-
-
-            }
-
-            catch (error) {
-
-                console.error(error);
-
-                alert(
-                    error.message ||
-                    "Something went wrong while generating notes."
-                );
-
-            }
-
-            finally {
-
-                generateBtn.disabled = false;
-
-                generateIcon.textContent = "✨";
-
-                generateText.textContent =
-                    "Generate Notes";
-
-            }
-
-        });
-
-
-
-        // ================================
-        // COPY BUTTON
-        // ================================
-
-        const copyBtn =
-            document.getElementById("copyBtn");
-
-
-        copyBtn.addEventListener("click", async () => {
-
-            const text =
-                notesOutput.innerText;
-
-
-            if (!text) return;
-
-
-            try {
-
-                await navigator.clipboard.writeText(text);
-
-                copyBtn.textContent = "✅ Copied!";
-
-
-                setTimeout(() => {
-
-                    copyBtn.textContent = "📋 Copy";
-
-                }, 1500);
-
-            }
-
-            catch (error) {
-
-                console.error(error);
-
-                alert("Could not copy the notes.");
-
-            }
-
-        });
-
-
-
-        // ================================
-        // DOWNLOAD BUTTON
-        // ================================
-
-        const downloadBtn =
-            document.getElementById("downloadBtn");
-
-
-        downloadBtn.addEventListener("click", () => {
-
-            const text =
-                notesOutput.innerText;
-
-
-            if (!text) return;
-
-
-            const blob =
-                new Blob(
-                    [text],
-                    { type: "text/plain" }
-                );
-
-
-            const url =
-                URL.createObjectURL(blob);
-
-
-            const a =
-                document.createElement("a");
-
-
-            a.href = url;
-
-            a.download = "study-notes.txt";
-
-            a.click();
-
-
-            URL.revokeObjectURL(url);
-
-        });
+        }
 
     </script>
+
+
+    <!-- Existing app functionality -->
+    <script src="app.js"></script>
 
 </body>
 </html>
