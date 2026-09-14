@@ -20,6 +20,23 @@ const ai = new GoogleGenAI({
 });
 
 // ========================================
+// LOCAL OLLAMA SETUP
+// ========================================
+// Ollama runs the AI model locally on your computer.
+// This keeps normal text generation independent of
+// Gemini's request quota.
+//
+// Current local model:
+// qwen2.5:0.5b
+//
+// If Ollama is unavailable, the app can fall back to Gemini.
+// PDFs continue to use Gemini because this version sends
+// the uploaded PDF directly to Gemini.
+
+const OLLAMA_URL = "http://127.0.0.1:11434/api/generate";
+const OLLAMA_MODEL = "qwen2.5:0.5b";
+
+// ========================================
 // UPLOAD FOLDER
 // ========================================
 
@@ -75,6 +92,79 @@ function sleep(ms) {
     return new Promise(resolve => {
         setTimeout(resolve, ms);
     });
+}
+
+// ========================================
+// LOCAL OLLAMA GENERATION
+// ========================================
+
+async function generateWithOllama(prompt) {
+
+    console.log("");
+    console.log("=================================");
+    console.log(`Trying local Ollama model: ${OLLAMA_MODEL}`);
+    console.log("=================================");
+
+    const controller = new AbortController();
+
+    const timeout = setTimeout(() => {
+        controller.abort();
+    }, 180000);
+
+    try {
+
+        const response = await fetch(
+            OLLAMA_URL,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    model: OLLAMA_MODEL,
+                    prompt: prompt,
+                    stream: false
+                }),
+
+                signal: controller.signal
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                `Ollama returned HTTP ${response.status}.`
+            );
+        }
+
+        const notes = data.response;
+
+        if (!notes || !notes.trim()) {
+
+            throw new Error(
+                "Ollama returned an empty response."
+            );
+        }
+
+        console.log("");
+        console.log(
+            `SUCCESS using local ${OLLAMA_MODEL}`
+        );
+
+        return {
+            text: notes
+        };
+
+    } finally {
+
+        clearTimeout(timeout);
+
+    }
 }
 
 // ========================================
@@ -158,9 +248,6 @@ async function generateWithRetry(contents) {
                     console.log(
                         "Moving to next model..."
                     );
-
-                    // Do NOT retry this model.
-                    // Move directly to the next model.
 
                     break;
                 }
@@ -874,10 +961,59 @@ Make the notes useful for:
                 "Starting AI generation..."
             );
 
-            const response =
-                await generateWithRetry(
-                    contents
-                );
+            let response;
+
+            // ====================================
+            // CHOOSE AI ENGINE
+            // ====================================
+            //
+            // No PDF:
+            //   Use the local Ollama model first.
+            //
+            // PDF uploaded:
+            //   Use Gemini because this version sends
+            //   the PDF directly to Gemini.
+            //
+            // If local Ollama is unavailable for a normal
+            // text request, automatically fall back to Gemini.
+
+            if (!uploadedFile) {
+
+                try {
+
+                    response =
+                        await generateWithOllama(
+                            prompt
+                        );
+
+                } catch (ollamaError) {
+
+                    console.error("");
+                    console.error(
+                        "Local Ollama failed:"
+                    );
+
+                    console.error(
+                        ollamaError.message
+                    );
+
+                    console.log(
+                        "Falling back to Gemini..."
+                    );
+
+                    response =
+                        await generateWithRetry(
+                            contents
+                        );
+                }
+
+            } else {
+
+                response =
+                    await generateWithRetry(
+                        contents
+                    );
+            }
 
             // ====================================
             // GET NOTES
@@ -889,7 +1025,7 @@ Make the notes useful for:
             if (!notes) {
 
                 throw new Error(
-                    "Gemini returned an empty response."
+                    "The AI returned an empty response."
                 );
             }
 
@@ -1038,6 +1174,14 @@ app.listen(
 
         console.log(
             `http://localhost:${PORT}`
+        );
+
+        console.log(
+            `Local AI: ${OLLAMA_MODEL}`
+        );
+
+        console.log(
+            "PDF mode: Gemini"
         );
 
         console.log(
