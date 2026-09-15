@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Settings | Noviqra</title>
+
+    <link rel="stylesheet" href="settings.css">
+</head>
+
+<body>
+
+    <header class="settings-header">
+
+        <div class="brand">
+            <div class="brand-icon">N</div>
+
+            <div>
+                <h1>Noviqra</h1>
+                <p>Settings</p>
+            </div>
+        </div>
+
+        <a href="../index.html" class="back-button">
+            ← Back to Noviqra
+        </a>
+
+    </header>
+
+
+    <main class="settings-container">
+
+        <div class="settings-title">
+            <span>⚙️</span>
+
+            <div>
+                <h2>App Settings</h2>
+                <p>Personalize the appearance of your learning space.</p>
+            </div>
+        </div>
+
+
+        <!-- COLOR COMBINATIONS -->
+
+        <section class="settings-card">
+
+            <div class="section-heading">
+                <div class="section-icon">🎨</div>
+
+                <div>
+                    <h3>Color Combination</h3>
+                    <p>Choose the accent colors used throughout Noviqra.</p>
+                </div>
+            </div>
+
+
+            <div class="color-grid">
+
+                <button class="color-option selected" data-theme="teal">
+                    <div class="color-preview teal-preview"></div>
+                    <strong>Teal & White</strong>
+                    <span>Clean & modern</span>
+                </button>
+
+
+                <button class="color-option" data-theme="blue">
+                    <div class="color-preview blue-preview"></div>
+                    <strong>Ocean Blue</strong>
+                    <span>Calm & focused</span>
+                </button>
+
+
+                <button class="color-option" data-theme="green">
+                    <div class="color-preview green-preview"></div>
+                    <strong>Forest Green</strong>
+                    <span>Natural & fresh</span>
+                </button>
+
+
+                <button class="color-option" data-theme="purple">
+                    <div class="color-preview purple-preview"></div>
+                    <strong>Royal Purple</strong>
+                    <span>Creative & bold</span>
+                </button>
+
+
+                <button class="color-option" data-theme="orange">
+                    <div class="color-preview orange-preview"></div>
+                    <strong>Sunset Orange</strong>
+                    <span>Energetic & warm</span>
+                </button>
+
+
+                <button class="color-option" data-theme="pink">
+                    <div class="color-preview pink-preview"></div>
+                    <strong>Rose Pink</strong>
+                    <span>Soft & friendly</span>
+                </button>
+
+
+                <button class="color-option" data-theme="indigo">
+                    <div class="color-preview indigo-preview"></div>
+                    <strong>Indigo</strong>
+                    <span>Deep & professional</span>
+                </button>
+
+
+                <button class="color-option" data-theme="cyan">
+                    <div class="color-preview cyan-preview"></div>
+                    <strong>Cyan</strong>
+                    <span>Bright & digital</span>
+                </button>
+
+
+                <button class="color-option" data-theme="red">
+                    <div class="color-preview red-preview"></div>
+                    <strong>Crimson</strong>
+                    <span>Strong & confident</span>
+                </button>
+
+
+                <button class="color-option" data-theme="gold">
+                    <div class="color-preview gold-preview"></div>
+                    <strong>Gold & Navy</strong>
+                    <span>Premium & elegant</span>
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- BACKGROUND THEMES -->
+
+        <section class="settings-card">
+
+            <div class="section-heading">
+
+                <div class="section-icon">🖼️</div>
+
+                <div>
+                    <h3>Background Theme</h3>
+                    <p>Choose the background for your learning environment.</p>
+                </div>
+
+            </div>
+
+
+            <div class="background-grid">
+
+                <button class="background-option selected" data-background="white">
+
+                    <div class="background-preview white-bg">
+                        <span>Clean</span>
+                    </div>
+
+                    <strong>Clean White</strong>
+                    <span>Simple and distraction-free</span>
+
+                </button>
+
+
+                <button class="background-option" data-background="soft-teal">
+
+                    <div class="background-preview soft-teal-bg">
+                        <span>Teal</span>
+                    </div>
+
+                    <strong>Soft Teal</strong>
+                    <span>Light and refreshing</span>
+
+                </button>
+
+
+                <button class="background-option" data-background="gradient">
+
+                    <div class="background-preview gradient-bg">
+                        <span>Gradient</span>
+                    </div>
+
+                    <strong>Soft Gradient</strong>
+                    <span>Modern and colorful</span>
+
+                </button>
+
+
+                <button class="background-option" data-background="mesh">
+
+                    <div class="background-preview mesh-bg">
+                        <span>Mesh</span>
+                    </div>
+
+                    <strong>Teal Mesh</strong>
+                    <span>Modern learning atmosphere</span>
+
+                </button>
+
+
+                <button class="background-option" data-background="dark">
+
+                    <div class="background-preview dark-bg">
+                        <span>Dark</span>
+                    </div>
+
+                    <strong>Midnight</strong>
+                    <span>Dark and focused</span>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- CUSTOM BACKGROUND -->
+
+        <section class="settings-card">
+
+            <div class="section-heading">
+
+                <div class="section-icon">📤</div>
+
+                <div>
+                    <h3>Your Own Background</h3>
+                    <p>Upload an image and use it as your Noviqra background.</p>
+                </div>
+
+            </div>
+
+
+            <label class="upload-background">
+
+                <input
+                    type="file"
+                    id="backgroundUpload"
+                    accept="image/png,image/jpeg,image/webp"
+                >
+
+                <div class="upload-icon">＋</div>
+
+                <strong>Choose Background Image</strong>
+
+                <span>
+                    PNG, JPG or WebP • Recommended landscape image
+                </span>
+
+            </label>
+
+
+            <div id="customPreview" class="custom-preview hidden">
+
+                <img id="previewImage" alt="Custom background preview">
+
+                <button id="removeBackground" type="button">
+                    Remove Custom Background
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- RESET -->
+
+        <section class="settings-card reset-card">
+
+            <div>
+
+                <h3>Reset Appearance</h3>
+
+                <p>
+                    Restore Noviqra's default teal and white appearance.
+                </p>
+
+            </div>
+
+            <button id="resetSettings" class="reset-button">
+                Reset Settings
+            </button>
+
+        </section>
+
+
+    </main>
+
+
+    <script src="settings.js"></script>
+
+</body>
+</html>
